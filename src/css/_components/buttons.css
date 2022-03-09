@@ -1,0 +1,41 @@
+.button {
+  @apply font-display;
+  @apply inline-block;
+  @apply py-16 px-32;
+  @apply rounded;
+  @apply text-14;
+  @apply tracking-wide;
+  @apply uppercase;
+}
+
+.button-primary {
+  @apply bg-warm-600;
+  @apply text-white;
+}
+
+.button-hover-teal {
+  background-image: linear-gradient(90deg, transparent 50%, config('colors.teal-400') 0);
+}
+
+.button-hover-yellow {
+  @apply text-warm-600 !important;
+  background-image: linear-gradient(90deg, transparent 50%, config('colors.white') 0);
+}
+
+.button-hover-default {
+  background-image: linear-gradient(90deg, transparent 50%, config('colors.warm-400') 0);
+}
+
+.button-hover-default,
+.button-hover-teal,
+.button-hover-yellow {
+  background-position: -1px;
+  background-size: 220%;
+  transition: background-position .2s ease-in-out, color .2s ease-in-out .1s;
+
+  &:hover{
+    @apply border-transparent;
+    background-position: -90%;
+    transition: background-position .2s ease-in-out, color .2s ease-in-out;
+  }
+}

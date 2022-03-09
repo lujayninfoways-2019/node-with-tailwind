@@ -1,0 +1,21 @@
+{% import '_macros' as macros %}
+
+{% set formId = formId ?? null %}
+
+{% if formId %}
+  {% include '_partials/forms/marketo-embed' with {
+    formId: formId,
+    module: 'MarketoContact',
+  } only %}
+
+  <div class="text-center">
+    <button
+      id="marketo-submit"
+      type="submit"
+      class="button button-primary mx-auto mb-48"
+      {{ macros.gtm([ 'Contact Us', craft.app.request.absoluteUrl ]) }}
+    >
+      Get in touch
+    </button>
+  </div>
+{% endif %}

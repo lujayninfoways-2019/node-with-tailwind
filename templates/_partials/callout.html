@@ -1,0 +1,43 @@
+{% import '_macros' as macros %}
+
+{% set class = class ?? null %}
+{% set heading = heading ?? null %}
+{% set kicker = kicker ?? null %}
+{% set headingLevel = kicker ? 3 : 2 %}
+{% set description = description ?? null %}
+{% set linkText = linkText ?? null %}
+{% set linkUrl = linkUrl ?? null %}
+{% set image = image ?? null %}
+{% set imageAlignment = imageAlignment ?? 'right' %}
+{% set alignmentClass = imageAlignment == 'left' ? 'flex-row-reverse' %}
+
+{% if heading and description and image %}
+  <section class="sm:flex max-w-1000 mx-auto relative {{ class }} {{ alignmentClass }}">
+    <div class="sm:w-1/2 py-72 px-32">
+      {% if kicker %}
+        <h2 class="label text-12 mb-12">
+          {{ kicker }}
+        </h2>
+      {% endif %}
+
+      <h{{ headingLevel }} class="hd-24 mb-16">
+        {{ heading }}
+      </h{{ headingLevel }}>
+      <div class="rtf mb-16">
+        {{ description }}
+      </div>
+
+      {% if linkUrl %}
+        <p>
+          <a class="label font-bold text-warm-600 link-hover-underline" href="{{ linkUrl }}">
+            {{ linkText ?? 'Read More' }}
+          </a>
+        </p>
+      {% endif %}
+    </div>
+    <div
+      class="sm:w-1/2 bg-cover bg-center bg-cover smd:aspect-ratio-16/9 relative"
+      style="background-image: url('{{ image.url({ width: 500 }) }}')"
+    ></div>
+  </section>
+{% endif %}

@@ -1,0 +1,4 @@
+{% if not craft.app.config.general.devMode and not craft.app.request.isAjax %}
+  {% exit 404 %}
+{% endif %}
+{% block content %}{% endblock %}

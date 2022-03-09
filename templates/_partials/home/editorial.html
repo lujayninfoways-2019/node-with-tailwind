@@ -1,0 +1,25 @@
+{% import '_macros' as macros %}
+
+{{ macros.responsiveBgImage(entry.homeEditorialBackgroundImage.one(), '.home-editorial') }}
+
+<section class="home-editorial">
+  <div class="max-w-800 mx-auto px-16">
+    <h2 class="hd text-24 sm:text-48 text-white leading-tight mb-32">
+      {{ entry.homeEditorialHeading }}
+    </h2>
+    <div class="rtf text-white tracking-slight">
+      {{ entry.homeEditorialIntro }}
+    </p>
+  </div>
+</section>
+
+{% include '_partials/callout' with {
+  class: 'max-w-1200 mx-auto bg-earth-200 lg:-mt-320 relative z-2',
+  kicker: entry.calloutKicker,
+  heading: entry.calloutHeading,
+  description: entry.calloutDescription,
+  linkText: entry.calloutCtaText,
+  linkUrl: entry.calloutCtaUrl,
+  image: entry.calloutImage.one(),
+  imageAlignment: entry.calloutImageAlignment,
+} only %}

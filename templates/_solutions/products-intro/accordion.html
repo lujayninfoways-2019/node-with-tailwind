@@ -1,0 +1,25 @@
+{% import '_macros' as macros %}
+{% set heading = heading ?? null %}
+{% set description = description ?? null %}
+{% set productItems = productItems ?? null %}
+
+{% set items = [] %}
+{% set linkText = 'Learn More' %}
+
+{% for productItem in productItems %}
+  {% set product = productItem.relatedProduct.one() %}
+  {% set item = {
+    heading: productItem.heading ?? product.title,
+    description: productItem.description ?? product.productBriefDescription,
+    image: product.productThumbnail.one(),
+    linkText: linkText,
+    linkUrl: product.url,
+  } %}
+  {% set items = items | merge([item]) %}
+{% endfor %}
+
+{% include '_partials/accordion' with {
+  heading: heading,
+  description: description,
+  items: items,
+} only %}

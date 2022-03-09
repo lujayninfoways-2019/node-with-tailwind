@@ -1,0 +1,82 @@
+{% import '_macros' as macros %}
+
+<section class="bg-earth-100" data-module="MemberModal">
+  <div
+    class="about-carousel carousel opacity-0 max-w-1280 mx-auto bg-word"
+    data-bg-word="Executive"
+    data-module="AboutCarousel"
+  >
+    <div class="flex items-center px-16 mb-24">
+      <h2 class="hd text-24 mr-16">
+        Our Leadership Team
+      </h2>
+
+      <button
+        class="carousel-arrow mr-8"
+        data-dir="left"
+        aria-label="Slide left"
+        disabled
+      >
+        {{ macros.svg('arrow-left') }}
+      </button>
+      <button
+        class="carousel-arrow rotate-180"
+        data-dir="right"
+        aria-label="Slide right"
+      >
+        {{ macros.svg('arrow-left') }}
+      </button>
+    </div>
+
+    <div class="carousel-slider">
+      {% for member in entry.aboutTeamMembers.all() %}
+        {% set headshot = member.peopleHeadshot.one() %}
+        {% set fallbackId = (loop.index % 4) + 1 %}
+        {% set headshotFallbackClass = not headshot ? 'shadow-inner aspect-ratio-square bg-fallback-' ~ fallbackId %}
+
+        <article class="about-carousel-item">
+          <div class="w-full h-full">
+            <div class="rounded-circle overflow-hidden mb-32 mx-auto {{ headshotFallbackClass }}">
+              {% if headshot %}
+                <img
+                  src="{{ headshot.url({ width: 250 })}}"
+                  srcset="{{ macros.srcset(headshot, [130, 250, 500], 1) }}"
+                  srcsizes="{{ macros.srcsizes(130, {ty: 250}) }}"
+                  alt=""
+                >
+              {% endif %}
+            </div>
+
+            <h3 class="hd text-18 text-earth-800 mb-8">
+              {{ member.title }}
+            </h3>
+            {% if member.peopleJobTitle %}
+              <p class="label text-12 text-purple-700 mb-12">
+                {{ member.peopleJobTitle }}
+              </p>
+            {% endif %}
+            <p class="text-14 mb-12">
+              {% if member.peopleBriefBio %}
+                {{ member.peopleBriefBio }}
+              {% elseif member.peopleBio %}
+                {{ member.peopleBio | chop(limit=35, unit='w', append='...') }}
+              {% endif %}
+            </p>
+            <button
+              class="label font-bold text-12 text-warm-600 link-hover-underline"
+              data-modal-show
+              data-member-id="{{ member.slug }}"
+            >
+              Read More
+            </button>
+          </div>
+        </article>
+      {% endfor %}
+    </div>
+
+    {# Indicators populated via js #}
+    <div class="flex w-full justify-center -mb-32 md:-mb-48">
+      <div class="carousel-indicators"></div>
+    </div>
+  </div>
+</section>

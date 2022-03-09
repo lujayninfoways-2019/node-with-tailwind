@@ -1,0 +1,49 @@
+{% import '_macros' as macros %}
+
+{% set entry = entry ?? null %}
+{% set class = class ?? null %}
+{% set type = type ?? null %}
+{% set date = date ?? null %}
+{% set subheading = subheading ?? null %}
+{% set image = image ?? null %}
+{% set fallbackId = fallbackId ?? null %}
+{% set imageFallbackClass = imageFallbackClass ?? null %}
+
+{% if entry %}
+  {% set imageClass = 'circle-shadow circle-60 ty:circle-165 sm:circle-315' %}
+  {% set imageClass = image is null ? [imageClass, imageFallbackClass] | join(' ') : imageClass %}
+
+  <article class="{{ class }} text-earth-300">
+    <a class="flex group items-center" href="{{ entry.url }}">
+      <div class="flex-no-shrink relative z-1 mr-12 sm:mr-48">
+        <div class="{{ imageClass }} zoom-container group-hover:zoom-in">
+          {% if image %}
+            <img
+              src="{{ image.url({ width: 630, height: 630 }) }}"
+              srcset="{{ macros.srcset(image, [60, 315, 630], 1) }}"
+              sizes="{{ macros.srcsizes(60, {sm: 315, ty: 165}) }}"
+              alt=""
+            >
+          {% endif %}
+        </div>
+        <div class="circle-90 ty:circle-315 sm:circle-520 shrink group-hover:shrink-circle absolute pin-c bg-earth-700 opacity-50 z--1"></div>
+      </div>
+
+      <div class="flex-grow max-w-450 relative z-2">
+        <div class="label text-12">
+          <span class="text-warm-200">
+            Featured
+          </span>
+
+          {% if date %}
+            &middot; {{ macros.formattedDate(date) }}
+          {% endif %}
+        </div>
+        <h3 class="hd-36 text-white resource-hero-link mt-8 mb-4">
+          {{ entry.title }}
+        </h3>
+        {{ subheading }}
+      </div>
+    </a>
+  </article>
+{% endif %}

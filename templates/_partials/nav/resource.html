@@ -1,0 +1,30 @@
+{% import '_macros' as macros %}
+{% set resource = resource ?? null %}
+
+{% if resource %}
+  {% set image = resource.resourceHeroFeaturedImage.one() ?? null %}
+  <a
+    class="sub-nav__link"
+    {{ macros.gtm([ 'Top Navigation Click', 'Resources', resource.title ]) }}
+    href="{{ resource.url }}"
+  >
+    <h5 class="hd text-14 navd:text-white nav:text-24">
+      {{ resource.title }}
+    </h5>
+    <div class="flex items-start">
+      <p class="flex-grow navd:text-12 navd:text-earth-400 tracking-slight">
+        {{ resource.heroDescription }}
+      </p>
+      {% if image %}
+        <div class="circle-60 nav:circle-90 ml-8 flex-no-shrink">
+          <img
+            src="{{ image.url({ width: 90 }) }}"
+            srcset="{{ macros.srcset(image, [60, 90, 120, 180], 1) }}"
+            sizes="{{ macros.srcsizes(60, {sm: 90}) }}"
+            alt=""
+          >
+        </div>
+      {% endif %}
+    </div>
+  </a>
+{% endif %}

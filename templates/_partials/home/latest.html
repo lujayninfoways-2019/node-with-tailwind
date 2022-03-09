@@ -1,0 +1,62 @@
+{% import '_macros' as macros %}
+
+{% set event = entry.homeLatestEvent.one() ?? macros.getNextEvent() %}
+{% set eventBg = entry.homeLatestEventBackgroundImage.one() ?? event.resourceHeroFeaturedImage.one() ?? null %}
+{% set resources = entry.homeLatestResources %}
+{% set resources = macros.fillInResources(resources, 'all', 3, [event.id]) %}
+
+<section class="bg-earth-100 mt-96">
+  <div class="max-w-1200 mx-auto sm:flex">
+    <div class="sm:w-1/2">
+      <h2 class="xs:ml-96 bg-earth-200 label text-12 text-right p-12 mb-48">
+        {{ entry.homeLatestHeading }}
+      </h2>
+      <div>
+        {% for entry in resources %}
+          {% include '_partials/resources/' ~ entry.type ~ '-resource-listing' with {
+            entry: entry,
+            class: 'mb-32 px-16',
+            compact: true,
+          } only %}
+        {% endfor %}
+      </div>
+    </div>
+    <div
+      class="sm:w-1/2 bg-purple-900 bg-cover relative smd:aspect-ratio-square"
+      {% if eventBg %}
+        style="background-image: url('{{ eventBg.url({ width: 500 }) }}')"
+      {% endif %}
+    >
+      <article class="absolute pin-l pin-b bg-purple-700 p-24 mb-32 text-earth-400">
+        <h2 class="label text-12 mb-12">
+          Upcoming Event
+        </h2>
+
+        <h3 class="hd text-white text-24">
+          {{ event.title }}
+        </h3>
+
+        {% if event.eventDate %}
+          <p class="font-bold text-14">
+            {{ macros.formattedDate(event.eventDate) }}
+          </p>
+        {% endif %}
+
+        {% if entry.eventStartTime %}
+          <p class="text-14">
+            {{ macros.formattedTime(entry.eventStartTime) }}
+            {% if entry.eventEndTime %}
+              - {{ macros.formattedTime(entry.eventEndTime) }}
+            {% endif %}
+          </p>
+        {% endif %}
+
+        <div class="mt-12">
+          <a href="{{ event.url }}" class="label text-12 text-warm-400 link-hover-underline">
+            Learn More
+          </a>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>

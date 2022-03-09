@@ -1,0 +1,10 @@
+{% set formId = formId ?? null %}
+{% set gatedUrl = gatedUrl ?? null %}
+
+{% if formId and gatedUrl %}
+  {% include '_partials/forms/marketo-embed' with {
+    formId: formId,
+    module: 'MarketoGate',
+    gatedUrl: gatedUrl,
+  } only %}
+{% endif %}

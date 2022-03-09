@@ -1,0 +1,51 @@
+{% import '_macros' as macros %}
+{% set isTransparent = isTransparent ?? false %}
+{% set onLightBg = isTransparent and onLightBg ?? false %}
+{% set containerClass = isTransparent ? 'absolute pin-t pin-x' : 'bg-white relative' %}
+
+<div class="nav:px-32 z-max {{ containerClass }}">
+  <nav
+    class="main-nav {{ isTransparent ? '-transparent' }} {{ onLightBg ? '-light-bg' }}"
+    data-module="Nav"
+  >
+    {# Logo #}
+    <a class="main-nav__logo navd:ml-16" href="/">
+      <span class="sr-only">FiscalNote</span>
+      {{ macros.svg('fiscalnote-logo') }}
+    </a>
+
+    {# Mobile menu trigger #}
+    <button class="main-nav__mobile-trigger">
+      {{ macros.svg('menu') }}
+    </button>
+
+    {# Links #}
+    <h2 class="sr-only">Main Navigation</h2>
+
+    <ul class="sub-navs">
+      {% include '_partials/nav/solutions' %}
+      {% include '_partials/nav/products' %}
+      {% include '_partials/nav/resources' %}
+      {% include '_partials/nav/about' %}
+
+      {% include '_partials/nav/link-only' with {
+        text: 'Contact',
+        url: url('/contact'),
+      } %}
+
+      {% cache globally using key 'global-nav-signin' %}
+        {% set signIn = navGlobal.signInLink.one() ?? null %}
+
+        {% if signIn %}
+          {% set signInUrl = signIn.pageEntry.one().url ?? signIn.linkUrl %}
+
+          {% include '_partials/nav/link-only' with {
+            text: 'Sign In',
+            url: signInUrl,
+            class: '-contrast',
+          } %}
+        {% endif %}
+      {% endcache %}
+    </ul>
+  </nav>
+</div>

@@ -1,0 +1,20 @@
+{% set float = float ?? null %}
+{% set stat = block.statisticEntry.one() %}
+
+<section class="bg-pattern-rings p-24 ty:p-72 sm:py-96 sm:pl-96 xs:float-{{ float }}">
+  <div class="max-w-275 mx-auto">
+    <div class="text-warm-600">
+      <div class="text-120 font-serif font-bold leading-none">
+        {{ stat.statisticNumber }}
+      </div>
+      <div class="label text-18 -mt-8 mb-24">
+        {{ stat.statisticUnits }}
+      </div>
+    </div>
+    <p>
+      {{ stat.statisticDescription }}
+    </p>
+  </div>
+</section>
+
+{# purgecss xs:float-left xs:float-right #}

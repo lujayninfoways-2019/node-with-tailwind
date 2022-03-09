@@ -1,0 +1,63 @@
+.form {
+  & label {
+    @apply block;
+    @apply font-heavy;
+    @apply mb-4;
+    @apply text-14;
+    @apply text-teal-600;
+    @apply w-full;
+  }
+
+  & input[type="text"],
+  & input[type="email"],
+  & input[type="tel"] {
+    @apply bg-earth-200;
+    @apply border-none;
+    @apply font-sans;
+    @apply leading-normal;
+    @apply p-12;
+    @apply rounded;
+    @apply shadow-inner;
+    @apply text-16;
+    @apply text-earth-700;
+    @apply w-full;
+  }
+
+  & input[type=checkbox] {
+    display: none;
+
+    & + label {
+      cursor: pointer;
+
+      &::before {
+        @apply bg-earth-200;
+        @apply border-none;
+        @apply h-25;
+        @apply inline-block;
+        @apply mr-12;
+        @apply relative;
+        @apply rounded;
+        @apply shadow-inner;
+        @apply w-25;
+        content: '';
+        cursor: pointer;
+        top: 6px; /* manual centering */
+      }
+    }
+
+    &:checked {
+      & + label {
+        @apply text-teal-600;
+
+        &::before {
+          @apply border-teal-600;
+          @apply text-white;
+          @apply bg-warm-200;
+          background:
+            url('/assets/images/icons/check.svg') no-repeat center / 80%,
+            radial-gradient(15px at center, rgba(225, 225, 225, 0.1) -150%, #087D85 100%);
+        }
+      }
+    }
+  }
+}

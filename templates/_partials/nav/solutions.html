@@ -1,0 +1,64 @@
+{% cache globally using key 'global-nav-solutions' %}
+
+  {% set primaryItems = [] %}
+  {% for item in navGlobal.navSolutionsPrimaryEntries.all() %}
+    {% set solutionEntry = item.solutionEntry.one() %}
+    {% set primaryItems = primaryItems | merge([{
+      heading: solutionEntry.title,
+      description: item.description,
+      url: solutionEntry.url,
+    }]) %}
+  {% endfor %}
+
+  {% set secondaryItems = [] %}
+  {% for item in navGlobal.navSolutionsSecondaryEntries.all() %}
+    {% set secondaryItems = secondaryItems | merge([{
+      heading: item.title,
+      url: item.url,
+    }]) %}
+  {% endfor %}
+
+  {% set content %}
+    {# Callout #}
+    <p class="navd:hidden w-1/2 pt-48 pr-48 md:pr-72 font-serif text-24 lg:text-36 text-earth-500">
+      {{ navGlobal.navSolutionsCallout }}
+    </p>
+
+    {# Type 1 #}
+    <div class="navd:mb-32 nav:w-1/2 nav:pr-32 nav:border-r border-earth-300">
+      {% include '_partials/nav/column' with {
+        heading: navGlobal.navSolutionsPrimaryHeading,
+        items: primaryItems,
+        withDescription: true,
+        topLevelName: 'Solutions',
+      } only %}
+    </div>
+
+    {# Type 2 #}
+    <div class="flex-no-shrink nav:w-175 nav:pl-32">
+      {% include '_partials/nav/column' with {
+        heading: navGlobal.navSolutionsSecondaryHeading,
+        items: secondaryItems,
+        topLevelName: 'Solutions',
+      } only %}
+    </div>
+  {% endset %}
+
+  {% set footer %}
+    <div class="py-8 text-right">
+      <a
+        href="{{ url('/solutions') }}"
+        class="link-hover-underline font-bold text-warm-200 nav:text-warm-600"
+      >
+        View All Solutions
+      </a>
+    </div>
+  {% endset %}
+
+  {% include '_partials/nav/sub-nav' with {
+    name: 'Solutions',
+    content: content,
+    footer: footer,
+  } only %}
+
+{% endcache %}

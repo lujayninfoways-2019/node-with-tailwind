@@ -1,0 +1,46 @@
+{% set pageBlocks = pageBlocks ?? null %}
+{% set blockClass = blockClass ?? null %}
+{% set isPartsKit = isPartsKit ?? false  %}
+
+{# Identify handles of blocks that, unless full width, need to alternate #}
+{% set alternatingBlocks = ['pullquote', 'statistic', 'image', 'singleCta'] %}
+{% set floatRight = true %}
+
+{# Identify handles of full-width blocks #}
+{% set fullWidthBlocks = ['imageCarousel', 'newsletter'] %}
+
+{% if pageBlocks and pageBlocks | length %}
+  <div class="py-48 px-16">
+    <div class="max-w-1280 mx-auto clearfix">
+      {% for block in pageBlocks.all() %}
+        {%- if isPartsKit -%}
+          <div class="label font-bold max-w-1280 mb-16 mx-auto px-32 mt-32 text-warm-400 w-full clear">{{ block.type }}</div>
+        {%- endif -%}
+
+        {# Check if this block alternates and isn't full-width #}
+        {% set alternates = block.type.handle in alternatingBlocks %}
+        {% set alternates = (block.fullWidth is defined and block.fullWidth) ? false : alternates %}
+        {% set float = alternates ? (floatRight ? 'right' : 'left') : null %}
+        {% set floatRight = alternates ? not floatRight : floatRight %}
+
+        {# Check if this block is full width; if so, break out of container #}
+        {% set isFullWidth = block.type.handle in fullWidthBlocks or (block.fullWidth is defined and block.fullWidth) %}
+        {% if isFullWidth %}
+          </div>
+        {% endif %}
+
+        <div class="block-{{ block.type }} {{ blockClass }}">
+          {% include '_blocks/' ~ block.type.handle ignore missing with {
+            block: block,
+            float: float
+          } only %}
+        </div>
+
+        {# Reopen container after full-width blocks #}
+        {% if isFullWidth %}
+          <div class="max-w-1280 mx-auto clearfix">
+        {% endif %}
+      {% endfor %}
+    </div>
+  </div>
+{% endif %}

@@ -1,0 +1,17 @@
+{% set attribution = attribution ?? null %}
+{% set text = text ?? null %}
+{% set title = title ?? null %}
+
+{% if text %}
+  <blockquote class="bg-earth-200 py-24 px-16 my-48">
+    <div class="max-w-750 mx-auto">
+      <h2 class="font-serif font-bold text-purple-700 text-14 mb-12">
+        {{ title }}
+      </h2>
+      <p class="font-serif font-light mb-16 text-earth-700 text-24 sm:text-30">
+        {{ text }}
+      </p>
+      {{ attribution }}
+    </div>
+  </blockquote>
+{% endif %}

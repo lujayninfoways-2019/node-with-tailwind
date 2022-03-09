@@ -1,0 +1,71 @@
+{% import '_macros' as macros %}
+{% extends '_layouts/app' %}
+
+{% block content %}
+  {% set image = entry.resourceHeroFeaturedImage.one() %}
+  {% set subheading %}
+    {% if entry.webinarDate or entry.webinarStartTime %}
+      <div class="leading-loose">
+        {% if entry.webinarDate %}
+          <div class="font-bold">
+            {{ macros.formattedDate(entry.webinarDate) }}
+          </div>
+        {% endif %}
+        {% if entry.webinarStartTime %}
+          {{ macros.formattedTime(entry.webinarStartTime) }}
+        {% endif %}
+        {% if entry.webinarEndTime %}
+          - {{ macros.formattedTime(entry.webinarEndTime) }}
+        {% endif %}
+      </div>
+    {% endif %}
+  {% endset %}
+
+  {% include '_partials/resources/hero' with {
+    resourceType: 'Webinar',
+    heading: entry.title,
+    subheading: subheading,
+    intro: entry.heroDescription,
+    image: image,
+    imageAlt: entry.heroFeaturedImageAltText,
+  } only %}
+
+  <div class="flex smd:flex-col-reverse max-w-1000 mx-auto py-48 px-16">
+    <div class="rtf sm:flex-grow">
+      {{ entry.webinarBodyText }}
+    </div>
+
+    <div class="w-full smd:mb-72 sm:flex-no-shrink sm:max-w-375 sm:ml-48">
+      {# Gated #}
+      {% if entry.webinarGated %}
+        <div class="label text-12 mb-32">
+          All fields are required
+        </div>
+
+        {% include '_partials/forms/resource-gate' with {
+          formId: entry.gateMarketoFormId ?? marketoGlobal.defaultGateMarketoFormId ?? null,
+          gatedUrl: entry.webinarUrl,
+        } only %}
+
+        <button id="marketo-submit" class="button button-primary button-hover-default">
+          {{ entry.webinarButtonText ?? 'Watch Webinar' }}
+        </button>
+      {% else %}
+        {# Ungated #}
+        <a
+          class="button button-primary button-hover-default"
+          {{ macros.gtm([ 'Watch a Webinar', entry.title, entry.webinarUrl ]) }}
+          href="{{ entry.webinarUrl }}"
+        >
+          {{ entry.webinarButtonText ?? 'Watch Webinar' }}
+        </a>
+      {% endif %}
+    </div>
+   </div>
+
+   {% cache %}
+     {% include '_partials/page-blocks' with {
+       pageBlocks: entry.pageBlocks,
+     } only %}
+   {% endcache %}
+{% endblock %}

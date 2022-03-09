@@ -1,0 +1,223 @@
+.main-nav {
+  @apply flex;
+  @apply items-center;
+  @apply justify-between;
+  @apply relative;
+
+  &::after {
+    @apply absolute;
+    @apply border-b;
+    @apply border-earth-300;
+    @apply pin-b pin-x;
+    @apply z-2;
+    content: '';
+  }
+}
+
+.main-nav__logo {
+  @apply block;
+  @apply text-purple-700;
+  height: 22px;
+  width: 140px;
+
+  @screen navd {
+    @apply my-16;
+  }
+}
+
+.main-nav__mobile-trigger {
+  @apply text-purple-700;
+
+  @screen navd {
+    @apply mr-16;
+  }
+
+  @screen nav {
+    @apply hidden;
+  }
+}
+
+.main-nav__link {
+  @apply block;
+  @apply label;
+  @apply p-16;
+  @apply text-12;
+  @apply text-white;
+
+  @screen navd {
+    @apply relative;
+    @apply text-left;
+    @apply w-full;
+
+    &[data-sub-nav-trigger]::before {
+      @apply absolute;
+      @apply bg-center;
+      @apply bg-no-repeat;
+      @apply pin-y pin-r;
+      @apply w-32;
+      background-image: url('/assets/images/icons/arrow-down--white.svg');
+      background-size: 10px;
+      content: '';
+      transition: transform 0.2s;
+    }
+
+    &[aria-expanded="true"] {
+      &[data-sub-nav-trigger]::before {
+        transform: rotate(180deg);
+      }
+    }
+
+
+    &.-contrast {
+      @apply bg-warm-600;
+      @apply font-bold;
+    }
+  }
+
+  @screen nav {
+    @apply text-purple-700;
+
+    &:hover,
+    &[aria-expanded="true"] {
+      @apply bg-purple-700;
+      @apply text-white;
+    }
+
+    &.-contrast {
+      @apply font-bold;
+      @apply text-warm-600;
+    }
+  }
+}
+
+html[data-whatinput="keyboard"] .main-nav__link:focus {
+  @apply bg-purple-700;
+  @apply text-white;
+  outline: none;
+}
+
+/* TRANSPARENT NAV */
+.main-nav.-transparent:not(.-is-active):not(.-light-bg) {
+  &::after {
+    @apply opacity-25;
+  }
+
+  & .main-nav__logo,
+  & .main-nav__mobile-trigger {
+    @apply text-white;
+  }
+
+  & .main-nav__link {
+    @apply text-white;
+
+    &:hover,
+    &[aria-expanded="true"] {
+      background-color: rgba(255, 255, 255, 0.2);
+    }
+
+    &.-contrast {
+      @apply text-warm-400;
+    }
+  }
+}
+
+html[data-whatinput="keyboard"] .main-nav.-transparent:not(.-light-bg) .main-nav__link:focus {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+/* ACTIVE NAV */
+@screen navd {
+  .main-nav.-is-active {
+    @apply bg-purple-700;
+
+    &::after {
+      @apply mx-16;
+      @apply opacity-25;
+    }
+
+    & .main-nav__logo,
+    & .main-nav__mobile-trigger {
+      @apply text-white;
+    }
+  }
+}
+
+/* SUB NAVS */
+.sub-navs {
+  @screen navd {
+    @apply absolute;
+    @apply bg-purple-700;
+    @apply hidden;
+    @apply pin-x;
+    top: 100%;
+  }
+
+  @screen nav {
+    @apply flex;
+  }
+}
+
+@screen navd {
+  .main-nav.-is-active .sub-navs {
+    @apply block;
+  }
+}
+
+.sub-nav {
+  @apply bg-purple-800;
+  @apply hidden;
+  @apply p-16;
+
+  @screen nav {
+    @apply absolute;
+    @apply bg-white;
+    @apply -mx-32;
+    @apply p-48;
+    @apply pin-x;
+    @apply shadow;
+    @apply z--2;
+    top: 100%;
+  }
+
+  &.-is-active {
+    @apply block;
+    @apply z--1;
+  }
+}
+
+.sub-nav__link {
+  @apply block;
+  @apply relative;
+
+  &::before {
+    @apply absolute;
+    @apply bg-warm-200;
+    @apply mr-8;
+    @apply pin-y;
+    @apply transition-fast;
+    content: '';
+    right: 100%;
+    transform-origin: bottom left;
+    transform: scaleY(0);
+    width: 4px;
+  }
+
+  &:hover::before {
+    transform: scaleY(1);
+  }
+}
+
+/* This is used to easily track clicks outside the subnav to close it */
+.sub-nav__bg-exit {
+  @apply fixed;
+  @apply invisible;
+  @apply pin-y pin-x;
+  @apply z--3;
+}
+
+.main-nav.-is-active,
+.main-nav.-sub-nav-is-active {
+  & .sub-nav__bg-exit {
+    @apply visible;
+  }
+}

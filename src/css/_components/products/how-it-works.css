@@ -1,0 +1,53 @@
+.how-it-works {
+  & .line-before::before {
+    @apply bg-black;
+    @apply flex-no-grow;
+    @apply flex-no-shrink;
+    @apply opacity-50;
+    margin-left: -108px; /* width of line & margin */
+    width: 100px;
+  }
+}
+
+.how-it-works__img {
+  @apply relative;
+
+  & img {
+    @apply opacity-0;
+    transition: opacity 0.4s 0.7s;
+  }
+
+  &::before,
+  &::after {
+    @apply absolute;
+    @apply block;
+    @apply mx-16;
+    @apply opacity-25;
+    @apply pin-x;
+    @apply pin-y;
+    @apply transition-slower;
+    @apply z--1;
+    content: '';
+  }
+
+  &::before {
+    @apply bg-black;
+    transform: translate3d(-60px, -60px, 0);
+  }
+
+  &::after {
+    @apply bg-white;
+    transform: translate3d(60px, 60px, 0);
+  }
+
+  &.-is-revealed {
+    & img {
+      @apply opacity-100;
+    }
+
+    &::before,
+    &::after {
+      transform:translate3d(0, 0, 0);
+    }
+  }
+}

@@ -1,0 +1,12 @@
+{% import '_macros' as macros %}
+{% set callout = block.calloutEntry.one() %}
+
+{% include '_partials/callout' with {
+  class: 'bg-white shadow mb-72',
+  heading: callout.calloutHeading,
+  description: callout.calloutDescription,
+  linkText: callout.calloutCtaText,
+  linkUrl: callout.calloutCtaUrl,
+  image: callout.calloutImage.one(),
+  imageAlignment: callout.calloutImageAlignment,
+} only %}

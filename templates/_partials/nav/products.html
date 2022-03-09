@@ -1,0 +1,90 @@
+{% cache globally using key 'global-nav-products' %}
+
+  {# Keep track of entries to skip in spillover section #}
+  {% set idsToSkip = ['not'] %}
+
+  {% set primaryItems = [] %}
+  {% for item in navGlobal.navProductsPrimaryEntries.all() %}
+    {% set productEntry = item.productEntry.one() %}
+    {% set primaryItems = primaryItems | merge([{
+      heading: productEntry.title,
+      description: item.description ?? productEntry.productBriefDescription,
+      url: productEntry.url,
+    }]) %}
+    {% set idsToSkip = idsToSkip | merge([productEntry.id]) %}
+  {% endfor %}
+
+  {% set secondaryItems = [] %}
+  {% for item in navGlobal.navProductsSecondaryEntries.all() %}
+    {% set productEntry = item.productEntry.one() %}
+    {% set secondaryItems = secondaryItems | merge([{
+      heading: productEntry.title,
+      description: item.description ?? productEntry.productBriefDescription,
+      url: productEntry.url,
+    }]) %}
+    {% set idsToSkip = idsToSkip | merge([productEntry.id]) %}
+  {% endfor %}
+
+  {% set spilloverEntries = craft.entries.section('products')
+    .limit(8)
+    .id(idsToSkip)
+    .all()
+  %}
+
+  {% set spilloverItems = [] %}
+  {% for item in spilloverEntries %}
+    {% set spilloverItems = spilloverItems | merge([{
+      heading: item.title,
+      url: item.url,
+    }]) %}
+  {% endfor %}
+
+  {% set content %}
+    {# Type 1 #}
+    <div class="navd:mb-32 nav:w-1/2 nav:pr-32">
+      {% include '_partials/nav/column' with {
+        heading: navGlobal.navProductsPrimaryHeading,
+        items: primaryItems,
+        withDescription: true,
+        topLevelName: 'Products',
+      } only %}
+    </div>
+
+    {# Type 2 #}
+    <div class="navd:mb-32 nav:w-1/2 nav:pr-32 nav:border-r border-earth-300">
+      {% include '_partials/nav/column' with {
+        heading: navGlobal.navProductsSecondaryHeading,
+        items: secondaryItems,
+        withDescription: true,
+        topLevelName: 'Products',
+      } only %}
+    </div>
+
+    {# Spillover #}
+    <div class="flex-no-shrink nav:w-175 nav:pl-32">
+      {% include '_partials/nav/column' with {
+        heading: 'More',
+        items: spilloverItems,
+        topLevelName: 'Products',
+      } only %}
+    </div>
+  {% endset %}
+
+  {% set footer %}
+    <div class="py-8 text-right">
+      <a
+        href="{{ url('/products') }}"
+        class="link-hover-underline font-bold text-warm-200 nav:text-warm-600"
+      >
+        View All Products
+      </a>
+    </div>
+  {% endset %}
+
+  {% include '_partials/nav/sub-nav' with {
+    name: 'Products',
+    content: content,
+    footer: footer,
+  } only %}
+
+{% endcache %}

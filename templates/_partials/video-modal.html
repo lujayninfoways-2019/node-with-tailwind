@@ -1,0 +1,25 @@
+{% import '_macros' as macros %}
+
+{% set content %}
+  <div class="modal__video-container">
+    <div class="modal__video-content">
+      <div class="absolute pin-y pin-x flex justify-center items-center bg-purple-900">
+        {% include '_partials/loader' %}
+      </div>
+      <button
+        class="absolute pin-t pin-r p-16 -mt-40 group-stroke-warm-600"
+        data-label="Close modal"
+        data-modal-close
+      >
+        {{ macros.svg('close') }}
+      </button>
+      <iframe class="absolute pin-t pin-l w-full h-full"></iframe>
+    </div>
+  </div>
+{% endset %}
+
+{% include '_partials/modal' with {
+  id: 'video-modal',
+  containerClass: 'absolute pin-y pin-x flex justify-center items-center',
+  content: content,
+} only %}

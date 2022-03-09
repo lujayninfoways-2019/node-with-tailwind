@@ -1,0 +1,59 @@
+{% import '_macros' as macros %}
+
+<section class="max-w-800 mx-auto py-24" data-module="FeaturedQuotes">
+  <h2 class="label text-12 font-bold mb-12 line-after relative z-2">
+    {{ block.heading ?? 'How It’s Used by Leading Companies' }}
+  </h2>
+
+  <div class="sm:flex">
+    <div class="w-full sm:max-w-340 flex-no-shrink">
+      <p class="text-14 mb-12 pr-80">
+        {{ block.intro }}
+      </p>
+      <div class="relative">
+        {% for quoteItem in block.quoteItems.all() %}
+          <div class="featured-quotes__tab sm:line-after {{ loop.first ? '-is-active ' : 'smd:collapsed' }}">
+            <button
+              data-tab="{{ loop.index }}"
+            >
+              {{ quoteItem.heading }}
+            </button>
+          </div>
+        {% endfor %}
+
+        <button
+          class="sm:hidden absolute pin-t pin-r mr-12 sm:mr-48 text-teal-600 h-32 w-32 transition rotate-270"
+          data-toggler
+        >
+          {{ macros.svg('arrow-left') }}
+        </button>
+      </div>
+    </div>
+    <div class="featured-quotes__tab-panels">
+      {% for quoteItem in block.quoteItems.all() %}
+        <article class="featured-quotes__tab-panel {{ loop.first ? '-is-active' }}">
+          {% set quote = quoteItem.quoteEntry.one() %}
+          {% set person = quote.pullquoteAtribution.one() %}
+          {% set headshot = person.peopleHeadshot.one() %}
+
+          <blockquote class="font-serif text-20 mb-8">
+            &ldquo;{{ quote.pullquoteText }}&rdquo;
+          </blockquote>
+
+          {% include '_partials/attribution' with {
+            headshot: headshot,
+            person: person,
+          } only %}
+
+          {% set url = quoteItem.linkEntry.one().url ?? quoteItem.linkUrl %}
+          {% if url and quoteItem.linkText %}
+            <div class="featured-quotes__tab-panel__link mt-24 sm:text-right">
+              <a class="label text-12 font-bold text-warm-600 link-hover-underline" href="{{ url }}">
+                {{ quoteItem.linkText }}
+              </a>
+            </div>
+          {% endif %}
+        </article>
+      {% endfor %}
+    </div>
+</section>

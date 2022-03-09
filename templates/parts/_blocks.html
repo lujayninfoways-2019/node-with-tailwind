@@ -1,0 +1,15 @@
+{% extends '_layouts/app' %}
+
+{% block content %}
+  <div class="max-w-1280 mx-auto p-16 sm:px-32">
+    <h1 class="mb-16 hd-36">Parts: Page Blocks</h1>
+    <div class="mb-32">
+      <a class="link label" href="{{ url('/parts') }}">Back</a>
+    </div>
+  </div>
+
+  {% include '_partials/page-blocks' with {
+    pageBlocks: entry.pageBlocks,
+    isPartsKit: true,
+  } only %}
+{% endblock %}

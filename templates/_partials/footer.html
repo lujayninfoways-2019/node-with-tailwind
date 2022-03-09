@@ -1,0 +1,107 @@
+{% import '_macros' as macros %}
+
+{% cache globally using key 'global-footer' %}
+  <footer class="bg-white">
+    <div class="sm:flex mx-auto max-w-1280 pt-32 border-t-2 border-faded justify-center">
+      <div class="sm:text-right sm:mx-24 sm:px-32 flex-no-shrink text-center">
+        <ul class="font-bold text-warm-600 text-18 mb-48">
+          {% for link in footerGlobal.footerPageLinks.all() %}
+            {% if link.type == 'page' %}
+              {% set page = link.pageEntry.one() %}
+              {% set label = page.title %}
+              {% set url = page.url %}
+            {% else %}
+              {% set label = link.linkText %}
+              {% set url = link.linkUrl %}
+            {% endif %}
+
+            <li class="mb-24">
+              <a
+                class="link-hover-underline"
+                {{ macros.gtm([ 'Footer Click', label ]) }}
+                href="{{ url }}"
+              >
+                {{ label }}
+              </a>
+            </li>
+          {% endfor %}
+        </ul>
+      </div>
+
+      <div class="grid smd:px-72 mx-auto flex-grow group-fill-none group-stroke-earth-400 smd:text-center">
+        {% for office in footerGlobal.footerOffices.all() %}
+          <div class="grid-item pb-24 xs:w-1/2 lg:w-1/4">
+            <h3 class="label text-12 text-earth-700 mb-24 pl-24">
+              {{ office.location }}
+            </h3>
+            <ul class="text-12 text-earth-500">
+              {% set officeDetails = ['address', 'hours', 'phone'] %}
+              {% for detail in officeDetails if office[detail] %}
+                <li class="flex justify-center">
+                  <div class="flex-no-shrink sm:mr-6 mr-8 mt-4">
+                    {{ macros.svg(detail) }}
+                  </div>
+                  <div class="sm:flex-grow">
+                    <div class="smd:pb-8 pb-16">
+                      {{ office[detail] }}
+                    </div>
+                  </div>
+                </li>
+              {% endfor %}
+            </ul>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+
+    <div class="flex flex-wrap justify-center pt-8 pb-24">
+      {% for social in footerGlobal.footerSocialLinks.all() %}
+        <div class="sm:mx-24 md:mx-32 mx-8 p-16">
+          <a
+            {{ macros.gtm([ 'Footer Click', social.linkText ]) }}
+            href="{{ social.linkUrl }}"
+          >
+            <img
+              class="w-22 h-22 group-fill-none group-stroke-purple-700"
+              src="{{ social.icon.one().url() }}"
+              alt="{{ social.linkText }}"
+            >
+          </a>
+        </div>
+      {% endfor %}
+    </div>
+
+    <div class="bg-purple-700 font-display text-earth-100 text-10">
+      <div class="md:flex mx-auto max-w-1280 px-24 smd:px-48 py-24 justify-between items-center">
+        <div>
+          <a
+            class="underline"
+            {{ macros.gtm([ 'Footer Click', 'Privacy Policy' ]) }}
+            href="{{ url('/privacy') }}"
+          >
+            Privacy Policy
+          </a>
+          <p class="py-12">
+            All rights reserved. Copyright {{ now | date('Y') }}  FiscalNote.
+          </p>
+        </div>
+
+        <div class="flex items-center justify-center">
+          {% for product in footerGlobal.footerProductLinks.all() %}
+            <div class="smd:px-12 px-24">
+              <a
+                {{ macros.gtm([ 'Footer Click', product.linkText ]) }}
+                href="{{ product.linkUrl }}"
+              >
+                <img
+                  src="{{ product.logo.one().url() }}"
+                  alt="{{ product.linkText }}"
+                >
+              </a>
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+  </footer>
+{% endcache %}

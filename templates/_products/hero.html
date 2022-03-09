@@ -1,0 +1,39 @@
+{% import '_macros' as macros %}
+{% set entry = entry ?? null %}
+{% set shapes = shapes ?? null %}
+
+{% if entry %}
+  <header class="product-header py-48 sm:py-96 relative z-1" data-module="HeroAnimation">
+    <div class="max-w-800 mx-auto text-20 xs:text-24 md:text-36 md:pr-72 px-12 ">
+      <h1 class="inline font-heavy text-warm-200">
+        {{ entry.title }}
+      </h1>
+      <span class="font-light text-earth-200">
+        {{ entry.productDescription }}
+      </span>
+    </div>
+
+    <button id="togglebtn" class="button text-10 text-earth-500 hover:text-earth-300 absolute pin-b pin-r">
+      Stop Animation
+    </button>
+
+    <div class="hero-bg-shapes hidden absolute pin-x pin-y z--1 pointer-events-none">
+      {% set iterations = [4, 3, 2] %}
+
+      {% for shape in shapes %}
+        {% set shapesIndex = loop.index0 %}
+        {% for i in range(1, iterations[shapesIndex]) %}
+          {# Alternate light/dark #}
+          {% set shapeClass = i % 2 ? '-light' : '-dark' %}
+
+          {# Just one shape gets the "offset" color #}
+          {% set shapeClass = (shapesIndex == 0 and loop.last) ? '-offset' : shapeClass %}
+
+          <div class="hero-bg-shape {{ shapeClass }}">
+            {{ macros.svg(shape.slug) }}
+          </div>
+        {% endfor %}
+      {% endfor %}
+    </div>
+  </header>
+{% endif %}

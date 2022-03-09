@@ -1,0 +1,105 @@
+.link {
+  @apply border-warm-800;
+  @apply border-b-2;
+  @apply font-bold;
+  @apply pb-2;
+  @apply relative;
+  background-image: linear-gradient(90deg, transparent 50%, rgba(246, 220,	126, 0.5) 0);
+  background-position: -1px;
+  background-size: 220%;
+  transition: background-position .3s ease-in-out, color .2s ease-in-out .1s;
+
+  &:hover {
+    @apply border-transparent;
+    @apply text-warm-800;
+    background-position: -90%;
+    transition: background-position .3s ease-in-out, color .2s ease-in-out;
+  }
+}
+
+.link-hover-underline {
+  @apply relative;
+  @apply pb-4;
+
+  &::before {
+    @apply absolute;
+    @apply border-b-2;
+    @apply pin-b;
+    @apply pin-l;
+    @apply w-full;
+    @apply transition-fast;
+    content: '';
+    transform: scaleX(0);
+    transform-origin: bottom left;
+  }
+
+  &:hover::before {
+    transform: scaleX(1);
+  }
+}
+
+
+.link-404 {
+  background-image: linear-gradient(90deg, transparent 50%, #F6DC7E 0);
+
+  &:hover {
+    @apply text-purple-700;
+  }
+}
+
+.active-link-hover {
+  &:hover {
+    background: rgba(246,220,126, 0.5);
+
+    & a {
+      @apply text-warm-600;
+    }
+  }
+}
+
+.resource-hero-link:after,
+.resource-listing-link:after,
+.resource-filter-link:after {
+  @apply block;
+  content: '';
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform .3s;
+}
+
+.resource-hero-link:after {
+  @apply bg-warm-200;
+  height: 2px;
+}
+
+.resource-listing-link:after {
+  @apply bg-warm-600;
+  height: 1px;
+}
+
+.resource-filter-link:after {
+  @apply bg-teal-400;
+  height: 2px;
+}
+
+.group:hover .resource-hero-link:after,
+.group:hover .resource-listing-link:after,
+.resource-filter-link:hover:after,
+.tag-link:hover:after  {
+  transform: scaleX(1);
+}
+
+/* Resource Tag Links */
+.tag-link {
+  @apply pb-2;
+  @apply relative;
+  background-image: linear-gradient(90deg, transparent 50%, config('colors.teal-100') 0);
+  background-position: 0;
+  background-size: 220%;
+  transition: background-position .3s ease-in-out, color .2s ease-in-out .1s;
+
+  &:hover {
+    background-position: -90%;
+    transition: background-position .3s ease-in-out, color .2s ease-in-out;
+  }
+}

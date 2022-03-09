@@ -1,0 +1,51 @@
+{% import '_macros' as macros %}
+{% set heading = heading ?? null %}
+{% set description = description ?? null %}
+{% set productItems = productItems ?? null %}
+
+{% if productItems %}
+  <section class="bg-white shadow max-w-1200 mx-auto text-center">
+    {% if heading or description %}
+      <div class="p-32 sm:py-32 sm:px-96">
+        <div class="max-w-750 mx-auto pb-24 border-b border-earth-300">
+          {% if heading %}
+            <h2 class="hd text-30 mb-12">
+              {{ heading }}
+            </h2>
+          {% endif %}
+          {% if description %}
+            <div class="font-serif leading-loose text-20">
+              {{ description }}
+            </div>
+          {% endif %}
+        </div>
+      </div>
+    {% endif %}
+
+    <div class="flex flex-wrap justify-between w-full">
+      {% for productItem in productItems %}
+        {% set product = productItem.relatedProduct.one() %}
+
+        <div class="max-w-340 mx-auto px-16 py-48 sm:py-72 relative z-1">
+          <div class="relative pt-24">
+            <h3 class="font-heavy text-24 text-earth-800 mb-16">
+              {{ product.title }}
+            </h3>
+            <p>
+              {{ productItem.description ?? product.productBriefDescription }}
+            </p>
+          </div>
+          <div class="bg-animation-group -group-{{ loop.index }} text-earth-800 opacity-15">
+            {% for shape in product.productShapes.all() %}
+              <div class="bg-animation">
+                {{ macros.svg(shape.slug) }}
+              </div>
+            {% endfor %}
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  </section>
+{% endif %}
+
+{# purgecss -group-1 -group-2 -group-3 #}

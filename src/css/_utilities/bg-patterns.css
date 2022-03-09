@@ -1,0 +1,62 @@
+.bg-pattern-bubbles,
+.bg-pattern-bubbles-light,
+.bg-pattern-bubbles-faded {
+  background-position: 90% 0;
+  background-repeat: no-repeat;
+}
+.bg-pattern-bubbles {
+  background-image: url('/assets/images/bg-patterns/bubbles.svg');
+}
+
+.bg-pattern-bubbles-light {
+  background-image: url('/assets/images/bg-patterns/bubbles-light.svg');
+}
+
+.bg-pattern-bubbles-faded {
+  background-image: url('/assets/images/bg-patterns/bubbles-faded.svg');
+}
+
+.bg-pattern-rings {
+  background-image: url('/assets/images/icons/saturn-rings2.svg');
+  background-position: center center;
+  background-size: contain;
+  background-repeat: no-repeat;
+}
+
+@for $i from 1 to 4 {
+  .bg-fallback-$i {
+    background-image: url('/assets/images/bg-patterns/resource-fallback-$(i).png');
+    background-position: center center;
+    background-size: 100%;
+  }
+}
+
+.bg-word {
+  @apply py-32;
+  @apply relative;
+  @apply z-1;
+
+  @screen md {
+    @apply py-72;
+  }
+
+  &::before {
+    content: attr(data-bg-word);
+    @apply absolute;
+    @apply block;
+    @apply font-black;
+    @apply leading-none;
+    @apply pin-l;
+    @apply pin-t;
+    @apply text-earth-200;
+    @apply text-120;
+    @apply uppercase;
+    @apply z--1;
+    margin-left: -50px;
+
+    @screen md {
+      font-size: 288px;
+      margin-left: -115px;
+    }
+  }
+}

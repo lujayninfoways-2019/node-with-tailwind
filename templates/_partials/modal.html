@@ -1,0 +1,25 @@
+{% set id = id ?? null %}
+{% set containerClass = containerClass ?? null %}
+{% set labelledBy = labelledBy ?? null %}
+{% set content = content ?? null %}
+
+<div class="modal" id="{{ id }}" aria-hidden="true">
+  <div
+    class="modal__overlay fixed pin-y pin-x flex justify-center items-center bg-purple-700-90 z-max"
+    tabindex="-1"
+    data-modal-close
+  >
+    <div
+      class="modal__container {{ containerClass }}"
+      role="dialog"
+      aria-modal="true"
+      {% if labelledBy %}
+        aria-labelledby="{{ labelledBy }}"
+      {% endif %}
+    >
+      {{ content }}
+    </div>
+  </div>
+</div>
+
+{# purgecss: is-open #}

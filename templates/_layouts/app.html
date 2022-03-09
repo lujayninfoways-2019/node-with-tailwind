@@ -1,0 +1,61 @@
+{# If staging, force every request to only be accessible to users that can access the CP #}
+{% if craft.app.env == 'staging' %}
+	{% requirePermission 'accessCp' %}
+{% endif %}
+
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="{{ rev('css/app.css') }}">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    {# Favicons #}
+    <link rel="apple-touch-icon" sizes="180x180" href="{{ url('/apple-touch-icon.png') }}">
+    <link rel="icon" type="image/png" sizes="32x32" href="{{ url('/favicon-32x32.png') }}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{{ url('/favicon-16x16.png') }}">
+    <link rel="manifest" href="{{ url('/site.webmanifest') }}">
+    <link rel="mask-icon" href="{{ url('/safari-pinned-tab.svg') }}" color="#5bbad5">
+    <meta name="msapplication-TileColor" content="#ffffff">
+    <meta name="theme-color" content="#ffffff">
+
+  </head>
+  <body>
+    {% include '_partials/nav/skip-nav' %}
+
+    {% include '_partials/nav/nav' with {
+      isTransparent: navIsTransparent ?? false,
+      onLightBg: navOnLightBg ?? false,
+    } only %}
+
+    <div id="main-content">
+      {% block content %}{% endblock %}
+    </div>
+
+		{% include '_partials/footer' %}
+
+    {% block modals %}{% endblock %}
+    {% include '_partials/video-modal' %}
+
+    {% block js %}
+      <script src="{{ rev('js/app.js') }}"></script>
+    {% endblock %}
+    {% if entry is defined and entry.schemaJson %}
+      {% include '_partials/schema-json' with {
+        schemaJson: entry.schemaJson,
+      } only %}
+    {% endif %}
+
+    {% if craft.app.config.general.devMode or (currentUser and currentUser.can('accessCp')) %}
+      {% if entry is defined and entry.cpEditUrl is defined %}
+        <a
+          href="{{ entry.cpEditUrl }}"
+          class="button button-primary button-hover-default fixed pin-b pin-l z-max"
+          target="_blank"
+        >
+          Edit Entry
+        </a>
+      {% endif %}
+    {% endif %}
+  </body>
+</html>

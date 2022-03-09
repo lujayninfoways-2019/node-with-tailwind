@@ -1,0 +1,30 @@
+{% set float = float ?? null %}
+{% set cta = block.ctaEntry.one() %}
+{% if block.fullWidth %}
+  {% set classes = 'my-48 text-center' %}
+{% else %}
+  {% set mx = float == 'right' ? 'ml' : 'mr' %}
+  {% set classes = 'w-full my-24 mx-auto smd:text-center sm:max-w-525 sm:' ~ mx ~ '-24 sm:float-' ~ float %}
+{% endif %}
+
+<section class="bg-purple-700 bg-pattern-bubbles py-48 px-16 {{ classes }}">
+  <div class="max-w-1280 mx-auto {{ not block.fullWidth ? 'sm:pl-96' }}">
+    <h2 class="font-serif leading-tight lowercase text-24 text-white sm:text-30 ">
+      {{ cta.ctaHeading }}
+    </h2>
+
+    {% if cta.ctaSubheading %}
+      <p class="text-earth-400 mt-12">
+        {{ cta.ctaSubheading }}
+      </p>
+    {% endif %}
+
+    <div class="mt-24">
+      <a class="button button-primary button-hover-default" href="{{ cta.ctaLinkUrl }}">
+        {{ cta.ctaLinkText }}
+      </a>
+    </div>
+  </div>
+</section>
+
+{# purgecss sm:ml-24 sm:mr-24 sm:float-left sm:float-right  #}

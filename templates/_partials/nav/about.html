@@ -1,0 +1,47 @@
+{% cache globally using key 'global-nav-about' %}
+
+  {% set links = [] %}
+  {% for item in navGlobal.navAboutLinks.all() %}
+    {% switch item.type %}
+
+      {% case 'page' %}
+        {% set pageEntry = item.pageEntry.one() %}
+        {% set links = links | merge([{
+          heading: item.heading ?? pageEntry.title,
+          description: item.description ?? null,
+          url: pageEntry.url,
+        }]) %}
+
+      {% case 'externalLink' %}
+        {% set links = links | merge([{
+          heading: item.linkText,
+          description: item.description ?? null,
+          url: item.linkUrl,
+        }]) %}
+
+    {% endswitch %}
+  {% endfor %}
+
+  {% set content %}
+    {# Callout #}
+    <p class="navd:hidden flex-grow pt-12 pr-48 lg:pt-24 lg:pr-72 font-serif text-24 lg:text-36 text-earth-500">
+      {{ navGlobal.navAboutCallout }}
+    </p>
+
+    {# Links #}
+    <div class="navd:mb-32 nav:w-415 nav:pl-32 nav:border-l border-earth-300 flex-no-shrink">
+      {% include '_partials/nav/column' with {
+        srHeading: 'Related Links',
+        items: links,
+        withDescription: true,
+        topLevelName: 'About',
+      } only %}
+    </div>
+  {% endset %}
+
+  {% include '_partials/nav/sub-nav' with {
+    name: 'About',
+    content: content,
+  } only %}
+
+{% endcache %}

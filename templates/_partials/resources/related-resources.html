@@ -1,0 +1,44 @@
+{% import '_macros' as macros %}
+{% set type = type ?? 'blog' %}
+{% set currentEntryId = currentEntryId ?? null %}
+{% set entries = entries ?? null %}
+{% set entries = macros.fillInResources(entries, type, 3, [currentEntryId]) %}
+
+{% if entries %}
+  <section class="bg-earth-100">
+    <div
+      class="max-w-1280 mx-auto bg-word"
+      data-bg-word="Related"
+    >
+      <div class="sm:flex max-w-1000 mx-auto lgd:px-16">
+        <div class="flex-grow">
+          <h2 class="label text-12 mb-32">
+            Related Resources
+          </h2>
+          {% for entry in entries %}
+            {% include '_partials/resources/' ~ entry.type ~ '-resource-listing' ignore missing with {
+              entry: entry,
+              class: 'mb-32'
+            } only %}
+          {% endfor %}
+        </div>
+
+        <div class="flex-no-shrink">
+          <h2 class="label text-12 mb-32">
+            Related Topics
+          </h2>
+          <ul class="font-heavy text-teal-500 text-14">
+            {% set topics = craft.categories.group('topics').all() %}
+            {% for topic in topics %}
+              <li class="mb-24">
+                <a href="{{ macros.resourcesIndexPath(null, topic.slug) }}">
+                  {{ topic }}
+                </a>
+              </li>
+            {% endfor %}
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+{% endif %}

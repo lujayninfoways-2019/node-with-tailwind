@@ -1,0 +1,8 @@
+@responsive {
+  .label {
+    @apply font-display;
+    @apply text-14;
+    @apply tracking-wide;
+    @apply uppercase;
+  }
+}

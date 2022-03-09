@@ -1,0 +1,55 @@
+.about-carousel {
+  @apply pb-72;
+
+  & .carousel-slide {
+    @apply flex;
+  }
+
+  & .carousel-indicators::before {
+    @apply hidden;
+  }
+
+  & .carousel-arrow {
+    @apply bg-warm-600;
+    @apply static;
+    @apply text-white;
+    height: 35px;
+    width: 35px;
+  }
+}
+
+.about-carousel-item {
+  @apply px-32;
+  @apply w-full;
+
+  /* This will provide an expected # of items */
+  /* per slide in AboutCarousel.js */
+  &::after {
+    content: '1';
+    display: none;
+  }
+
+  @screen ty {
+    @apply w-1/2;
+
+    &::after {
+      content: '2';
+    }
+  }
+
+  @screen xs {
+    @apply w-1/3;
+
+    &::after {
+      content: '3';
+    }
+  }
+
+  @screen md {
+    @apply w-1/4;
+
+    &::after {
+      content: '4';
+    }
+  }
+}

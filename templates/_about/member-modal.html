@@ -1,0 +1,12 @@
+{% set content %}
+  <div class="absolute pin-c">
+    {% include '_partials/loader' %}
+  </div>
+{% endset %}
+
+{% include '_partials/modal' with {
+  id: 'member-modal',
+  containerClass: 'w-full max-w-750 h-full max-h-90vh mx-16',
+  labelledBy: 'member-modal-title',
+  content: content,
+} only %}

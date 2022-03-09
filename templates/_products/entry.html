@@ -1,0 +1,92 @@
+{% import '_macros' as macros %}
+{% extends '_layouts/app' %}
+
+{% set navIsTransparent = true %}
+{% set shapes =  entry.productShapes.all() %}
+
+
+{% block content %}
+
+  <div class="product-theme-{{ entry.productColorTheme }} pt-48">
+    {# purgecss product-theme-purple product-theme-teal product-theme-blue product-theme-earth product-theme-red #}
+
+    {% include '_products/hero' with {
+      entry: entry,
+      shapes: shapes,
+    } only %}
+
+    <main class="relative z-1">
+      <section class="max-w-1280 mx-auto p-16">
+        <h2 class="sr-only">How it works</h2>
+
+        <ul class="how-it-works" data-module="ProductAnimation">
+          {% for item in entry.howItWorksBlocks.all() %}
+            <li class="grid mb-72 sm:mb-96">
+              <div class="grid-item smd:mb-24 sm:w-1/2 sm:pt-48">
+                <div class="max-w-450 mx-auto">
+                  <h3 class="how-it-works__heading label font-bold text-13 text-earth-200 mb-24 sm:mb-32 line-before">
+                    {{ item.heading }}
+                  </h3>
+                  <div class="how-it-works__description text-18 leading-loose text-earth-300">
+                    {{ item.description }}
+                  </div>
+                </div>
+              </div>
+              <div class="how-it-works__img grid-item sm:w-1/2">
+                <img src="{{ item.image.one().url }}">
+              </div>
+            </li>
+          {% endfor %}
+        </ul>
+      </section>
+
+
+      {% set ctaHeading = entry.productCtaHeading ?? 'Ready to see for yourself?' %}
+      {% set ctaLinkText = entry.productCtaLinkText ?? 'Request a demo' %}
+      {% set ctaLinkUrl = entry.productCtaLinkUrl | default(url('/contact', 'products[]=' ~ entry.slug)) %}
+
+      <section class="product-cta py-32 px-16 relative z-1">
+        <div class="smd:text-center sm:flex items-center mx-auto max-w-750 ">
+          <div class="sm:flex-no-shrink sm:max-w-300 smd:mb-16">
+            <h2 class="text-white font-serif text-30 lowercase leading-tight">
+              {{ ctaHeading }}
+            </h2>
+          </div>
+          <div class="smd:hidden border-b border-faded flex-grow ml-8 opacity-25"></div>
+          <div class="sm:flex-no-shrink">
+            <p class="sm:text-right">
+              <a
+                class="button button-primary button-hover-default"
+                {{ macros.gtm([ 'Request a Demo', entry.title ]) }}
+                href="{{ ctaLinkUrl }}"
+              >
+                {{ ctaLinkText }}
+              </a>
+            </p>
+          </div>
+          <div class="absolute pin-y pin-x bg-black opacity-25 z--1"></div>
+          <div class="absolute pin-y pin-x overflow-hidden z--1">
+            {% for shape in shapes %}
+              {% set shapeClass = loop.first
+                ? '-light pin-l'
+                : loop.last
+                  ? '-dark pin-c'
+                  : '-offset pin-r' %}
+              <div class="hero-bg-shape pin-t {{ shapeClass }}">
+                {{ macros.svg(shape.slug) }}
+              </div>
+            {% endfor %}
+          </div>
+      </section>
+
+      <div class="bg-earth-100">
+        {% cache %}
+          {% include '_partials/page-blocks' with {
+            pageBlocks: entry.pageBlocks,
+            blockClass: 'mb-48 sm:mb-72',
+          } only %}
+        {% endcache %}
+      </div>
+    </main>
+  </div>
+{% endblock %}

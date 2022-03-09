@@ -1,0 +1,31 @@
+<section class="bg-purple-700 bg-pattern-bubbles py-48 px-16">
+  <div class="grid max-w-1280 mx-auto smd:px-16">
+
+    {% set secondBlockClasses = 'smd:mt-48 smd:pt-48 border-faded smd:border-t sm:border-l' %}
+
+    {% for cta in block.ctaEntries.all() %}
+      <div class="grid-item mx-auto text-center sm:w-1/2 {{ loop.index == 2 ? secondBlockClasses }}">
+        <div class="flex flex-col max-w-450 mx-auto h-full">
+
+          <h2 class="font-serif flex-grow leading-tight lowercase text-24 text-white sm:text-30 ">
+            {{ cta.ctaHeading }}
+          </h2>
+
+          {% if cta.ctaSubheading %}
+            <p class="text-earth-400 flex-no-shrink mt-32 sm:mt-48">
+              {{ cta.ctaSubheading }}
+            </p>
+          {% endif %}
+
+          <div class="flex-no-shrink mt-16 sm:mt-32">
+            <a class="button button-primary button-hover-default" href="{{ cta.ctaLinkUrl }}">
+              {{ cta.ctaLinkText }}
+            </a>
+          </div>
+
+        </div>
+      </div>
+    {% endfor %}
+
+  </div>
+</section>

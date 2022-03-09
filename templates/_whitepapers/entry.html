@@ -1,0 +1,68 @@
+{% import '_macros' as macros %}
+{% extends '_layouts/app' %}
+
+{% block content %}
+  {% set date = entry.heroPublicationDate ?? entry.postDate %}
+  {% set image = entry.resourceHeroFeaturedImage.one() %}
+  {% set author = entry.heroAuthor ? entry.heroAuthor.one() : null %}
+  {% if author %}
+    {% set subheading %}
+      <p>
+        {{ macros.formattedAuthor(author) }}
+      </p>
+    {% endset %}
+  {% endif %}
+
+  {% include '_partials/resources/hero' with {
+    resourceType: 'Whitepaper',
+    date: date,
+    heading: entry.title,
+    subheading: subheading ?? null,
+    intro: entry.heroDescription,
+    image: image,
+    imageAlt: entry.heroFeaturedImageAltText,
+  } only %}
+
+  {% set buttonUrl = entry.whitepaperFile.one().url ?? entry.whitepaperUrl %}
+  {% set isGated = entry.whitepaperGated and buttonUrl %}
+
+    <div class="flex smd:flex-col-reverse max-w-1000 mx-auto py-48 px-16">
+      <div class="rtf sm:flex-grow">
+        {{ entry.whitepaperBodyText }}
+      </div>
+
+      <div class="w-full smd:mb-72 sm:flex-no-shrink sm:max-w-375 sm:ml-48">
+        {# Gated Version #}
+        {% if isGated %}
+          <div class="label text-12 mb-32">
+            All fields are required
+          </div>
+
+          {% include '_partials/forms/resource-gate' with {
+            formId: entry.gateMarketoFormId ?? marketoGlobal.defaultGateMarketoFormId ?? null,
+            gatedUrl: buttonUrl,
+          } only %}
+
+          <button
+            id="marketo-submit"
+            class="button button-primary button-hover-default"
+            {{ macros.gtm([ 'Download', entry.title, buttonUrl ]) }}
+          >
+            {{ entry.whitepaperButtonText ?? 'Download' }}
+          </button>
+        {% elseif buttonUrl%}
+          {# Ungated Version #}
+          <a href="{{ buttonUrl }}" class="button button-primary">
+            {{ entry.whitepaperButtonText ?? 'Download' }}
+          </a>
+        {% endif %}
+      </div>
+  </div>
+
+  {% cache %}
+    {% include '_partials/page-blocks' with {
+      pageBlocks: entry.pageBlocks,
+    } only %}
+  {% endcache %}
+
+{% endblock %}

@@ -1,0 +1,23 @@
+{% set style = style ?? 'success' %}
+{% set text = text ?? null %}
+
+{% if text %}
+  {% set class = style == 'success' ? 'bg-teal-400' : 'bg-warm-600' %}
+  <div
+    id="{{ style }}-message"
+    class="label text-white {{ class }}"
+    data-togglee
+    data-module="Toggle"
+  >
+    <div class="py-16 px-32">
+      {{ text }}
+      <button
+        class="font-bold hover:text-black"
+        aria-controls="{{ style }}-message"
+        aria-expanded="true"
+      >
+        Dismiss.
+      </button>
+    </div>
+  </div>
+{% endif %}

@@ -1,0 +1,20 @@
+{% import '_macros' as macros %}
+{% set items = [] %}
+
+{% for accordionItem in block.items.all() %}
+  {% set item = {
+    heading: accordionItem.heading,
+    description: accordionItem.description,
+    image: accordionItem.image.one(),
+    linkText: accordionItem.linkText ?? null,
+    linkUrl: accordionItem.linkUrl ?? null,
+  } %}
+  {% set items = items | merge([item]) %}
+{% endfor %}
+
+{% include '_partials/accordion' with {
+  heading: block.heading ?? null,
+  description: block.description ?? null,
+  items: items,
+  class: 'mb-72',
+} only %}

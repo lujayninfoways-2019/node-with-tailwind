@@ -1,0 +1,60 @@
+{% import '_macros' as macros %}
+
+{% cache globally using key 'global-nav-resources' %}
+
+  {% set featuredEvent = navGlobal.navResourcesFeaturedEvent.one() ?? macros.getNextEvent() %}
+
+  {% set featuredBlog = navGlobal.navResourcesFeaturedBlog.one()
+    ?? craft.entries.section('blog').one() %}
+
+  {% set links = [
+    { heading: 'Blog', url: macros.resourcesIndexPath('blog'), },
+    { heading: 'Case Studies', url: macros.resourcesIndexPath('caseStudies'), },
+    { heading: 'Whitepapers', url: macros.resourcesIndexPath('whitepapers'), },
+    { heading: 'Events', url: macros.resourcesIndexPath('events'), },
+    { heading: 'Webinars', url: macros.resourcesIndexPath('webinars'), },
+  ] %}
+
+  {% set content %}
+    <h4 class="label text-12 mb-24 nav:hidden line-before">
+      Featured
+    </h4>
+
+    {# Featured Event #}
+    <div class="navd:mb-32 nav:w-1/2 nav:pr-32 lg:pr-48">
+      <h4 class="label text-12 mb-24 navd:hidden">
+        Featured Event
+      </h4>
+
+      {% include '_partials/nav/resource' with {
+        resource: featuredEvent,
+      } only %}
+    </div>
+
+    {# Featured Blog #}
+    <div class="navd:mb-32 nav:w-1/2 nav:pr-32 nav:border-r border-earth-300">
+      <h4 class="label text-12 mb-24 navd:hidden">
+        Featured Blog
+      </h4>
+
+      {% include '_partials/nav/resource' with {
+        resource: featuredBlog,
+      } only %}
+    </div>
+
+    {# Links #}
+    <div class="flex-no-shrink nav:w-175 nav:pl-32">
+      {% include '_partials/nav/column' with {
+        srHeading: 'Related Links',
+        items: links,
+        topLevelName: 'Resources',
+      } only %}
+    </div>
+  {% endset %}
+
+  {% include '_partials/nav/sub-nav' with {
+    name: 'Resources',
+    content: content,
+  } only %}
+
+{% endcache %}

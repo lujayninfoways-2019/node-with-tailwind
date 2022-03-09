@@ -1,0 +1,137 @@
+.home-primary-blocks {
+  @apply overflow-x-auto;
+  @apply pb-72;
+  @apply text-center;
+  -webkit-overflow-scrolling: touch;
+
+  & ul {
+    @apply inline-flex;
+    @apply justify-center;
+    @apply text-left;
+  }
+
+  & li {
+    @apply mx-2;
+
+    &:nth-child(1) {
+      & a::after {
+        @apply bg-purple-700;
+        @apply text-purple-700;
+      }
+    }
+
+    &:nth-child(2) {
+      & a::after {
+        @apply bg-warm-600;
+        @apply text-warm-600;
+      }
+    }
+
+    &:nth-child(3) {
+      & a::after {
+        @apply bg-warm-400;
+        @apply text-warm-400;
+      }
+    }
+
+    &:nth-child(4) {
+      & a::after {
+        @apply bg-earth-500;
+        @apply text-earth-500;
+      }
+    }
+
+    &:nth-child(5) {
+      & a::after {
+        @apply bg-warm-200;
+        @apply text-warm-200;
+      }
+    }
+
+    &:nth-child(6) {
+      & a::after {
+        @apply bg-teal-500;
+        @apply text-teal-500;
+      }
+    }
+
+    & a:hover::after,
+    & a:focus::after {
+      @apply text-white;
+    }
+  }
+
+  & a {
+    @apply block;
+    @apply flex-col;
+    @apply flex-no-shrink;
+    @apply flex;
+    @apply font-bold;
+    @apply justify-end;
+    @apply p-24;
+    @apply relative;
+    @apply text-18;
+    @apply text-white;
+    @apply z-1;
+    height: 140px;
+    width: 190px;
+
+    & > * {
+      @apply block;
+      @apply opacity-100;
+      @apply transition-fast;
+      transform: translate3d(0, 0, 0);
+    }
+
+    &::before {
+      @apply absolute;
+      @apply bg-earth-800;
+      @apply opacity-75;
+      @apply pin-y pin-x;
+      @apply transition-slow;
+      @apply z--1;
+      content: '';
+    }
+
+    &::after {
+      @apply absolute;
+      @apply pin-x;
+      @apply py-8 px-12;
+      @apply text-14;
+      content: attr(data-title);
+      top: 100%;
+      transform-origin: top;
+      transform: scaleY(0.2);
+      transition: all 0.2s;
+    }
+
+    &:hover,
+    &:focus {
+      @apply bg-transparent;
+
+      & > * {
+        @apply opacity-0;
+        transform: translate3d(0, 10px, 0);
+      }
+
+      &::before {
+        @apply opacity-0;
+      }
+
+      &::after {
+        transform: scaleY(1);
+        transition: transform 0.2s, color 0.4s 0.2s;
+      }
+    }
+
+    @supports (background-blend-mode: multiply) {
+      @apply bg-earth-800;
+      @apply transition-slow;
+      background-blend-mode: multiply;
+
+      &::before {
+        @apply hidden;
+      }
+    }
+  }
+}

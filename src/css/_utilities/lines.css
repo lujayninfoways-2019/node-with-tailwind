@@ -1,0 +1,33 @@
+@responsive {
+  .line-before,
+  .line-after {
+    @apply flex;
+    @apply items-center;
+
+    & span {
+      @apply flex-no-shrink;
+    }
+
+    &::before,
+    &::after {
+      @apply flex-grow;
+      background: currentColor;
+      height: 1px;
+      opacity: 0.3;
+    }
+  }
+
+  .line-before {
+    &::before {
+      @apply mr-8;
+      content: '';
+    }
+  }
+
+  .line-after {
+    &::after {
+      @apply ml-8;
+      content: '';
+    }
+  }
+}

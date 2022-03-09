@@ -1,0 +1,17 @@
+.accessibility-link {
+  @apply absolute;
+  @apply bg-white;
+  @apply border-2;
+  @apply border-purple-700;
+  @apply font-bold;
+  @apply pin-l;
+  @apply pin-t;
+  @apply sr-only;
+  @apply text-20;
+  @apply text-purple-700;
+  z-index: 1000;
+
+  &:focus {
+    clip: auto;
+  }
+}

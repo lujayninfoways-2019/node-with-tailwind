@@ -1,0 +1,148 @@
+.featured-quotes__tab {
+  @screen smd {
+    @apply opacity-100;
+    @apply overflow-hidden;
+    transition: all 0.3s;
+    visibility: visible;
+  }
+
+  @screen sm {
+    @apply mb-12;
+    @apply relative;
+    @apply z-2;
+  }
+
+  & > button {
+    @apply font-heavy;
+    @apply py-8;
+    @apply relative;
+    @apply text-18;
+    @apply text-left;
+    @apply text-teal-600;
+
+    @screen smd {
+      @apply pl-16;
+    }
+
+    @screen sm {
+      @apply max-w-275;
+    }
+
+    &::before {
+      @apply absolute;
+      @apply bg-warm-200;
+      @apply h-full;
+      @apply pin-l;
+      @apply pin-t;
+      @apply transition-fast;
+      content: '';
+      transform: scaleX(0);
+      transform-origin: top right;
+      width: 8px;
+
+      @screen sm {
+        @apply -ml-16;
+      }
+    }
+  }
+
+  &::after {
+    @apply transition-fast;
+    transform: scaleX(0);
+    transform-origin: bottom left;
+  }
+
+  &.-is-active {
+    & > button {
+      @apply text-earth-800;
+
+      &::before {
+        transform: scaleX(1);
+      }
+    }
+
+    &::after {
+      transform: scaleX(1)
+    }
+  }
+}
+
+.featured-quotes__tab-panels {
+  @apply relative;
+
+  @screen smd {
+    @apply mt-24;
+  }
+
+  @screen sm {
+    @apply flex;
+    @apply flex-col;
+    @apply flex-grow;
+    @apply justify-center;
+    @apply -mx-32;
+
+    &::before {
+      @apply absolute;
+      @apply bg-earth-200;
+      @apply -mt-48;
+      @apply pin-l;
+      @apply pin-t;
+      @apply rounded-circle;
+      content: '';
+      padding-top: 75%;
+      transform: scale(1);
+      transition: transform 0.6s;
+      width: 75%;
+    }
+  }
+
+  &.-is-changing::before {
+    transform: scale(1.1);
+  }
+}
+
+.featured-quotes__tab-panel {
+  @apply absolute;
+  @apply pin-t pin-l;
+  @apply w-full;
+
+  @screen sm {
+    @apply p-24;
+    @apply pl-48;
+  }
+
+  & blockquote,
+  & cite,
+  & .featured-quotes__tab-panel__link {
+    @apply opacity-0;
+    transform: translate3d(0, 25px, 0);
+    transition: opacity 0.4s, visibility 0.4s, transform 0.4s 0.4s;
+    visibility: hidden;
+
+    @screen sm {
+      transform: translate3d(25px, 25px, 0);
+    }
+  }
+
+  &.-is-active {
+    & blockquote,
+    & cite,
+    & .featured-quotes__tab-panel__link {
+      @apply opacity-100;
+      transform: translate3d(0, 0, 0);
+      visibility: visible;
+    }
+
+    & blockquote {
+      transition-delay: 0.1s;
+    }
+
+    & cite {
+      transition-delay: 0.25s;
+    }
+
+    & .featured-quotes__tab-panel__link {
+      transition-delay: 0.4s;
+    }
+  }
+}

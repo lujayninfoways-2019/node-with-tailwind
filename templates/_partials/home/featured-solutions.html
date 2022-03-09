@@ -1,0 +1,39 @@
+{% set solutions = entry.homeFeaturedSolutions.all() %}
+
+<section class="bg-earth-200 pt-72 relative z-2" data-module="HomeAnimation">
+  <div class="home-featured-solutions">
+    <div class="home-featured-solutions__col-1">
+      <div class="clearfix">
+        <div class="float-right pl-16 smd:pr-16 sm:max-w-375 mb-72">
+          <h2 class="smd:hd text-24 sm:label sm:text-12 mb-16">
+            {{ entry.homeFeaturedSolutionsHeading }}
+          </h2>
+          <p class="leading-loose tracking-slight">
+            {{ entry.homeFeaturedSolutionsIntro }}
+          </p>
+        </div>
+      </div>
+
+      {% include '_partials/home/featured-solution' with {
+        num: 1,
+        block: solutions[0],
+        buttonClass: 'bg-teal-500 button-hover-teal',
+      } only %}
+    </div>
+
+    <div class="home-featured-solutions__col-2">
+      {% include '_partials/home/featured-solution' with {
+        num: 2,
+        block: solutions[1],
+        buttonClass: 'bg-warm-600 button-hover-default',
+      } only %}
+
+      {% include '_partials/home/featured-solution' with {
+        num: 3,
+        block: solutions[2],
+        buttonSide: 'start',
+        buttonClass: 'bg-warm-200 button-hover-yellow',
+      } only %}
+    </div>
+  </div>
+</section>

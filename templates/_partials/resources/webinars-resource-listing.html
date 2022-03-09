@@ -1,0 +1,36 @@
+{% import '_macros' as macros %}
+{% set entry = entry ?? null %}
+{% set class = class ?? null %}
+{% set isFeatured = isFeatured ?? false %}
+{% set showTags = showTags ?? false %}
+{% set compact = compact ?? false %}
+
+{% if entry %}
+  {% set subheading %}
+    {% if entry.webinarDate or entry.webinarStartTime %}
+      <div class="leading-loose">
+        {% if entry.webinarDate %}
+          <span class="font-bold">
+            {{ macros.formattedDate(entry.webinarDate) }}
+          </span>,
+        {% endif %}
+        {% if entry.webinarStartTime %}
+          {{ macros.formattedTime(entry.webinarStartTime) }}
+        {% endif %}
+        {% if entry.webinarEndTime %}
+          - {{ macros.formattedTime(entry.webinarEndTime) }}
+        {% endif %}
+      </div>
+    {% endif %}
+  {% endset %}
+
+  {% include '_partials/resources/resource-listing' with {
+    entry: entry,
+    type: 'Webinar',
+    subheading: subheading,
+    class: class,
+    isFeatured: isFeatured,
+    showTags: showTags,
+    compact: compact,
+  } only %}
+{% endif %}

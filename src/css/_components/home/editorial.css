@@ -1,0 +1,24 @@
+.home-editorial {
+  @apply bg-top;
+  @apply bg-cover;
+  @apply relative;
+  @apply py-72;
+  @apply z-1;
+
+  @screen sm {
+    @apply py-160;
+  }
+
+  @screen lg {
+    padding-bottom: 400px;
+  }
+
+  &::before {
+    @apply absolute;
+    @apply bg-purple-700;
+    @apply opacity-90;
+    @apply pin-y pin-x;
+    @apply z--1;
+    content: '';
+  }
+}

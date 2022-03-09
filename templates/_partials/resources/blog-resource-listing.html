@@ -1,0 +1,30 @@
+{% import '_macros' as macros %}
+{% set entry = entry ?? null %}
+{% set type = type ?? 'Blog' %}
+{% set class = class ?? null %}
+{% set isFeatured = isFeatured ?? false %}
+{% set showTags = showTags ?? false %}
+{% set compact = compact ?? false %}
+
+{% if entry %}
+  {% set date = entry.heroPublicationDate ?? entry.postDate %}
+  {% set author = entry.heroAuthor.one() %}
+  {% if author %}
+    {% set subheading %}
+      <p>
+        {{ macros.formattedAuthor(author) }}
+      </p>
+    {% endset %}
+  {% endif %}
+
+  {% include '_partials/resources/resource-listing' with {
+    entry: entry,
+    type: type,
+    date: date,
+    subheading: subheading ?? null,
+    class: class,
+    isFeatured: isFeatured,
+    showTags: showTags,
+    compact: compact,
+  } only %}
+{% endif %}

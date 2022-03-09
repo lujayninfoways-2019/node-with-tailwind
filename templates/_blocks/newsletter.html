@@ -1,0 +1,58 @@
+<section class="bg-teal-600 bg-pattern-bubbles-light py-48 px-16 my-48">
+  <div class="max-w-1280 mx-auto">
+    <h2 class="font-serif leading-tight lowercase text-center text-24 text-white sm:text-30 ">
+      {{ block.heading ?? newsletterGlobal.newsletterHeading }}
+    </h2>
+
+    <p class="max-w-750 mx-auto flex-no-shrink my-24 sm:mb-32 text-center text-earth-400">
+      {{ block.description ?? newsletterGlobal.newsletterDescription }}
+    </p>
+
+    <div class="max-w-575 mx-auto">
+      {% switch newsletterGlobal.newsletterIntegrationService %}
+
+        {% case 'pardot' %}
+            <form
+              class="bg-teal-800 shadow-inner rounded flex p-4 mb-16"
+              action="{{ newsletterGlobal.pardotFormAction }}"
+              method="post"
+              data-module="PardotNewsletter"
+            >
+              {{ csrfInput() }}
+              <label class="sr-only" for="newsletter-email" >Email</label>
+              <input
+                class="flex-grow bg-transparent text-white"
+                id="newsletter-email"
+                name="email"
+                type="email"
+                placeholder="Your Email"
+              >
+              <button class="button flex-no-shrink bg-white text-warm-600">
+                Sign Up
+              </button>
+            </form>
+
+
+        {% case 'marketo' %}
+          <div class="relative">
+            {% include '_partials/forms/marketo-embed' with {
+              formId: newsletterGlobal.marketoFormId,
+              class: 'newsletter-form transition',
+              module: 'MarketoNewsletter',
+            } only %}
+            <div
+              class="absolute pin-y pin-x label text-white flex text-center items-center transition invisible opacity-0"
+              data-marketo-success
+            >
+              Thanks! Your submission is being processed.
+            </div>
+          </div>
+
+      {% endswitch %}
+
+      <p class="font-display text-earth-300 text-10">
+        {{ block.legalText ?? newsletterGlobal.newsletterLegalText }}
+      </p>
+    </div>
+  </div>
+</section>

@@ -1,0 +1,24 @@
+{% extends '_layouts/app' %}
+
+{% block content %}
+
+  {% set date = entry.heroPublicationDate ?? entry.postDate %}
+  {% set image = entry.resourceHeroFeaturedImage.one() %}
+
+  {% include '_partials/resources/hero' with {
+    hideResourceBreadcrumb: true,
+    resourceType: 'Press Room',
+    date: date,
+    heading: entry.title,
+    intro: entry.heroDescription,
+    image: image,
+    imageAlt: entry.heroFeaturedImageAltText,
+  } only %}
+
+  {% cache %}
+    {% include '_partials/page-blocks' with {
+      pageBlocks: entry.pageBlocks,
+    } only %}
+  {% endcache %}
+
+{% endblock %}

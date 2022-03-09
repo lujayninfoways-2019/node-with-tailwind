@@ -1,0 +1,34 @@
+{% extends '_layouts/app' %}
+
+{% block content %}
+  {% if entry.heroCompany %}
+    {% set subheading %}
+      <p>
+        {{ entry.heroCompany }}
+      </p>
+    {% endset %}
+  {% endif %}
+
+  {% include '_partials/resources/hero' with {
+    resourceType: 'Case Study',
+    heading: entry.title,
+    subheading: subheading ?? null,
+    intro: entry.heroDescription,
+    image: entry.resourceHeroFeaturedImage.one(),
+    imageAlt: entry.heroFeaturedImageAltText,
+  } only %}
+
+  {% cache %}
+    {% include '_partials/page-blocks' with {
+      pageBlocks: entry.pageBlocks,
+    } only %}
+  {% endcache %}
+
+  {% set relatedResources = entry.resourceRelatedResources.all() %}
+
+  {% include '_partials/resources/related-resources' with {
+    currentEntryId: entry.id,
+    entries: relatedResources,
+    type: entry.type,
+  } only %}
+{% endblock %}

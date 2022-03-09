@@ -1,0 +1,8 @@
+ul.list {
+  @apply pl-24;
+  list-style: disc;
+
+  & li {
+    @apply mb-16;
+  }
+}

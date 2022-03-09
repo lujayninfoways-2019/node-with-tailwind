@@ -1,0 +1,16 @@
+{% set entry = entry ?? null %}
+{% set class = class ?? null %}
+{% set isFeatured = isFeatured ?? false %}
+{% set showTags = showTags ?? false %}
+{% set compact = compact ?? false %}
+
+{% if entry %}
+  {% include '_partials/resources/blog-resource-listing.html' with {
+    entry: entry,
+    class: class,
+    type: 'Whitepaper',
+    isFeatured: isFeatured,
+    showTags: showTags,
+    compact: compact,
+  } only %}
+{% endif %}

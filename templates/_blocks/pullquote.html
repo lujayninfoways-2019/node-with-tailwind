@@ -1,0 +1,28 @@
+{% import '_macros' as macros %}
+
+{% set pullquote = block.pullquoteEntry.one() %}
+{% set person = pullquote.pullquoteAtribution.one() %}
+{% set headshot = person.peopleHeadshot.one() %}
+{% set text = pullquote.pullquoteText %}
+{% set title = pullquote.title %}
+
+{% set attribution %}
+  {% include '_partials/attribution' with {
+    headshot: headshot,
+    person: person,
+  } only %}
+{% endset %}
+
+{% if block.fullWidth %}
+  {% include '_blocks/largePullQuote' with {
+    text: text,
+    title: title,
+    attribution: attribution,
+  } only %}
+{% else %}
+  {% include '_blocks/smallPullQuote' with {
+    text: text,
+    attribution: attribution,
+    float: float,
+  } only %}
+{% endif %}

@@ -1,0 +1,25 @@
+{% extends '_layouts/app' %}
+
+{% block content %}
+
+  {% include '_partials/pages/hero' with {
+    heading: 'Solutions',
+  } only %}
+
+  {% cache %}
+    {% set solutions = [] %}
+    {% for solution in craft.entries.section('solutions').all() %}
+      {% set solutions = solutions | merge([{
+        thumbnail: solution.solutionThumbnail.one(),
+        heading: solution.title,
+        description: solution.solutionBriefDescription,
+        url: solution.url,
+      }]) %}
+    {% endfor %}
+
+    {% include '_partials/page-listings' with {
+      pages: solutions,
+    } only %}
+  {% endcache %}
+
+{% endblock %}

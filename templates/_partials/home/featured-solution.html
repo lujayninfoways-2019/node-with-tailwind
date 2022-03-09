@@ -1,0 +1,31 @@
+{% set block = block ?? null %}
+
+{% if block %}
+  {% set num = num ?? null %}
+  {% set solution = block.solutionEntry.one() %}
+  {% set image = block.backgroundImage.one() ?? solution.solutionThumbnail.one() %}
+  {% set heading = block.heading ?? solution.title %}
+  {% set description = block.description ?? solution.solutionBriefDescription %}
+  {% set buttonSide = buttonSide ?? 'end' %}
+  {% set buttonClass = buttonClass ?? null %}
+
+  <div class="home-featured-solutions__block -block-{{ num }}">
+    <div
+      class="home-featured-solutions__block__bg"
+      style="background-image: url('{{ image.url({ width: 700 }) }}');"
+    ></div>
+    <div class="home-featured-solutions__block__content">
+      <h3 class="hd text-24 sm:text-48 leading-tight text-white mb-16">
+        {{ heading }}
+      </h3>
+      <p class="tracking-slight">
+        {{ description }}
+      </p>
+    </div>
+    <div class="flex justify-end sm:justify-{{ buttonSide }}">
+      <a href="{{ solution.url }}" class="button {{ buttonClass }}">
+        Learn More
+      </a>
+    </div>
+  </div>
+{% endif %}

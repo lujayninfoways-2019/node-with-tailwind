@@ -1,0 +1,25 @@
+{% import '_macros' as macros %}
+{% set headshot = headshot ?? null %}
+{% set person = person ?? null %}
+
+{% if person %}
+  <cite class="flex justify-start items-center">
+    {% if headshot %}
+      <div class="circle-60 flex-no-shrink mr-16">
+        <img
+          src="{{ headshot.url({ width: 120 }) }}"
+          srcset="{{ macros.srcset(headshot, [60, 120]) }}"
+          sizes="{{ macros.srcsizes(60) }}"
+          alt=""
+        >
+      </div>
+    {% endif %}
+    <div class="text-14">
+      <span class="font-bold text-purple-700">
+        {{ person.title -}}
+      </span>
+      {{- person.peopleJobTitle ? ', ' ~ person.peopleJobTitle }}
+      {{- person.peopleCompany ? ('<br>' ~ person.peopleCompany) | raw }}
+    </div>
+  </cite>
+{% endif %}

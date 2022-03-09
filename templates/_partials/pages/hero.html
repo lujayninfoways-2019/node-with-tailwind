@@ -1,0 +1,45 @@
+{% import '_macros' as macros %}
+
+{% set heading = heading ?? null %}
+{% set description = description ?? null %}
+{% set image = image ?? null %}
+{% set imageAlt = imageAlt ?? null %}
+{% set heroBg = heroBg ?? null %}
+{% set class = class ?? null %}
+
+{% if heading %}
+  {% if heroBg %}
+    {{ macros.responsiveBgImage(heroBg, '.hero-bg') }}
+  {% endif %}
+
+  <header class="hero-bg bg-earth-800 bg-cover pt-96 pb-72 relative z-1 {{ class }}">
+    {% if heroBg %}
+      <div class="absolute pin-y pin-x z--1 bg-earth-800 opacity-90"></div>
+    {% endif %}
+
+    <div class="max-w-1000 mx-auto px-16 sm:flex items-center">
+      <div class="flex-grow">
+        <h1 class="mb-16 hd text-36 text-white">
+          {{ heading }}
+        </h1>
+
+        {% if description %}
+          <p class="max-w-650 leading-loose text-white">
+            {{ description }}
+          </p>
+        {% endif %}
+      </div>
+
+      {% if image %}
+        <div class="circle-165 md:circle-315 smd:hidden sm:flex-no-shrink sm:ml-48">
+          <img
+            src="{{ image.url({ width: 630, height: 630 }) }}"
+            srcset="{{ macros.srcset(image, [165, 330, 630], 1) }}"
+            sizes="{{ macros.srcsizes(165, {md: 330}) }}"
+            alt="{{ imageAlt }}"
+          >
+        </div>
+      {% endif %}
+    </div>
+  </header>
+{% endif %}

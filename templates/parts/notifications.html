@@ -1,0 +1,26 @@
+{% extends '_layouts/app' %}
+
+{% block content %}
+
+  <div class="max-w-1280 mx-auto p-16 sm:px-32">
+    <h1 class="mb-16 hd-36">Parts: Contact Form</h1>
+    <div class="mb-32">
+      <a class="link label" href="{{ url('/parts') }}">Back</a>
+    </div>
+  </div>
+
+  <div class="mb-32">
+    {% include '_partials/notification' with {
+      style: 'success',
+      text: 'Thanks! Your submission is being processed.',
+    } only %}
+  </div>
+
+  <div class="mb-32">
+    {% include '_partials/notification' with {
+      style: 'error',
+      text: 'Error. Please check your form and try again.',
+    } only %}
+  </div>
+
+{% endblock %}

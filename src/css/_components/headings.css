@@ -1,0 +1,22 @@
+@responsive {
+  .hd {
+    @apply font-heavy;
+    @apply font-sans;
+    @apply text-purple-700;
+  }
+}
+
+/* @TODO: Replace uses of these with hd & text-# */
+.hd-36 {
+  @apply font-heavy;
+  @apply font-sans;
+  @apply text-36;
+  @apply text-purple-700;
+}
+
+.hd-24 {
+  @apply font-heavy;
+  @apply font-sans;
+  @apply text-24;
+  @apply text-purple-700;
+}

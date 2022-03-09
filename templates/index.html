@@ -1,0 +1,26 @@
+{% import '_macros' as macros %}
+{% extends '_layouts/app' %}
+
+{% set navIsTransparent = true %}
+{% set navOnLightBg = true %}
+
+{% block content %}
+
+  {% cache %}
+    {% include '_partials/home/hero' %}
+  {% endcache %}
+
+  {% cache %}
+    {% include '_partials/home/primary-blocks' %}
+  {% endcache %}
+
+  {% cache %}
+    {% include '_partials/home/featured-solutions' %}
+  {% endcache %}
+
+  {% cache %}
+    {% include '_partials/home/editorial' %}
+  {% endcache %}
+
+  {% include '_partials/home/latest' %}
+{% endblock %}

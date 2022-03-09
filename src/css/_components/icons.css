@@ -1,0 +1,19 @@
+.play-icon {
+  @apply absolute;
+  @apply bg-warm-600;
+  @apply flex;
+  @apply items-center;
+  @apply justify-center;
+  @apply rounded-circle;
+  height: 140px;
+  left: 50%;
+  mix-blend-mode: multiply;
+  top: 50%;
+  transform: translate3d(-50%, -50%, 0) scale(0.95);
+  transition: all 0.3s;
+  width: 140px;
+
+  &:hover {
+    transform: translate3d(-50%, -50%, 0) scale(1);
+  }
+}

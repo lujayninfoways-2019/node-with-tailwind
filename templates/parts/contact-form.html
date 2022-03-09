@@ -1,0 +1,14 @@
+{% extends '_layouts/app' %}
+
+{% block content %}
+  <div class="max-w-1280 mx-auto p-16 sm:px-32">
+    <h1 class="mb-16 hd-36">Parts: Contact Form</h1>
+    <div class="mb-32">
+      <a class="link label" href="{{ url('/parts') }}">Back</a>
+    </div>
+  </div>
+
+  <section class="max-w-1000 mx-auto py-48 px-16">
+    {% include '_contact/pardot' %}
+  </section>
+{% endblock %}

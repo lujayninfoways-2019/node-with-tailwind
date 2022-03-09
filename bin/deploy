@@ -1,0 +1,573 @@
+#!/usr/bin/env bash
+
+#
+# deploy(1) - Minimalistic shell script to deploy Git repositories.
+# Released under the MIT License.
+#
+# https://github.com/visionmedia/deploy
+#
+
+VERSION="0.6.0"
+CONFIG=./config/deploy.conf
+LOG=/tmp/deploy.log
+TEST=1
+REF=
+ENV=
+KEEP_RELEASES=8
+
+SLACK_CHANNEL="#fiscalnote-site"
+SLACK_EMOJI=":globe_with_meridians:"
+SLACK_URL="https://hooks.slack.com/services/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"
+
+#
+# Output usage information.
+#
+usage() {
+  cat <<-EOF
+
+Usage: deploy [options] <env> [command]
+
+Options:
+
+  -C, --chdir <path>   change the working directory to <path>
+  -c, --config <path>  set config path. defaults to $CONFIG
+  -T, --no-tests       ignore test hook
+  -V, --version        output program version
+  -h, --help           output help information
+
+Commands:
+
+  setup                run remote setup commands
+  config [key]         output config file or [key]
+  run <cmd>            run the given <cmd>
+  connect              open an ssh session to the host
+  [ref]                deploy to [ref], the 'ref' setting, or latest tag
+
+EOF
+}
+
+#
+# Abort with <msg>
+#
+abort() {
+  echo
+  echo "  $*" 1>&2
+  echo
+  exit 1
+}
+
+#
+# Log <msg>.
+#
+log() {
+  echo "  ○ $*"
+}
+
+#
+# Set configuration file <path>.
+#
+set_config_path() {
+  [[ -f "$1" ]] || abort "invalid --config path"
+  CONFIG="$1"
+}
+
+#
+# Check if config <section> exists.
+#
+config_section() {
+  grep "^\\[$1" "$CONFIG" &> /dev/null
+}
+
+#
+# Get config value by <key>.
+#
+config_get() {
+  local key="$1"
+
+  [[ -n "$key" ]] \
+    && grep "^\\[$ENV" -A 20 "$CONFIG" \
+    | grep "^$key" \
+    | head -n 1 \
+    | cut -d ' ' -f 2-999 \
+    | sed -E "s/^ +//"
+}
+
+#
+# Output version.
+#
+version() {
+  echo "$VERSION"
+}
+
+#
+# Return the ssh command to run.
+#
+ssh_command() {
+  local url
+  local key
+  local forward_agent
+  local port
+  local needs_tty
+  local control
+
+  url="$(config_get user)@$(config_get host)"
+  key="$(config_get key)"
+  forward_agent="$(config_get forward-agent)"
+  port="$(config_get port)"
+  needs_tty="$(config_get needs_tty)"
+
+  # Persist SSH connections for 60 seconds
+  control="  -o ControlMaster=auto"
+  control+=" -o ControlPath=tmp/sockets/%r@%h-%p"
+  control+=" -o ControlPersist=60"
+
+  [[ -n "$forward_agent" ]] && local agent="-A"
+  [[ -n "$key" ]]           && local identity="-i $key"
+  [[ -n "$port" ]]          && local port="-p $port"
+  [[ -n "$needs_tty" ]]     && local tty="-t"
+
+  echo "ssh $tty $agent $port $identity $control $url"
+}
+
+#
+# Run the given remote <cmd>.
+#
+run() {
+  local job
+  local cmd
+
+  job="$1"
+  cmd="$(ssh_command)"
+
+  echo "$cmd" "\"$job\"" >> $LOG
+
+  # shellcheck disable=SC2086
+  $cmd $job
+}
+
+#
+# Launch an interactive ssh console session.
+#
+connect() {
+  local path
+  local shell
+
+  path="$(config_get path)"
+  shell="$(ssh_command)"
+
+  echo "$shell"
+
+  # shellcheck disable=SC2086
+  exec $shell -t "cd $path; \$SHELL --login"
+}
+
+#
+# Output config or [key].
+#
+config() {
+  if [[ $# -eq 0 ]]; then
+    cat "$CONFIG"
+  else
+    config_get "$1"
+  fi
+}
+
+#
+# Execute hook <name> relative to the path configured.
+#
+hook() {
+  [[ -n "$1" ]] || abort "hook name required"
+
+  local hook
+  local path
+  local cmd
+
+  hook="$1"
+  path="$(config_get path)"
+  cmd="$(config_get "$hook")"
+
+  if [[ -n "$cmd" ]]; then
+    log "executing $hook \`$cmd\`"
+
+    run "cd $path/current; \
+      SHARED=\"$path/shared\" \
+      $cmd 2>&1 | tee -a $LOG; \
+      exit \${PIPESTATUS[0]}"
+
+    [[ $? -eq 0 ]]
+  else
+    log "hook $hook"
+  fi
+}
+
+#
+# Run setup.
+#
+setup() {
+  local path
+  local repo
+
+  path=$(config_get path)
+  repo=$(config_get repo)
+
+  log "running setup"
+  run "mkdir -p $path/{releases,shared/{cached-copy,config,logs,node_modules,pids,web/cpresources,storage}}"
+  [[ $? -eq 0 ]] || abort "setup paths failed"
+
+  log "cloning $repo"
+  run "git clone $repo $path/shared/cached-copy"
+  [[ $? -eq 0 ]] || abort "failed to clone"
+
+  log "setup complete"
+}
+
+#
+# Deploy [ref].
+#
+deploy() {
+  local release_name
+  local ref
+  local path
+  local shared_path
+  local source_path
+  local releases_path
+  local release_path
+
+  release_name="$(date +%Y%m%d%H%M%S)"
+  ref="$1"
+  path="$(config_get path)"
+  shared_path="$path/shared"
+  source_path="$shared_path/cached-copy"
+  releases_path="$path/releases"
+  release_path="$releases_path/$release_name"
+
+  log "deploying"
+
+  hook pre-deploy || abort "pre-deploy hook failed"
+
+
+  # Fetch source
+  log "fetching updates"
+  run "cd $source_path && git fetch --all"
+  [[ $? -eq 0 ]] || abort "fetch failed"
+
+
+  # Latest tag
+  if [[ -z "$ref" ]]; then
+    log "fetching latest tag"
+
+    ref=$(run "cd $source_path && git for-each-ref refs/tags \"
+      --sort=-*authordate \
+      --format='%(refname)' \
+      --count=1 | cut -d '/' -f 3")
+
+    [[ $? -eq 0 ]] || abort "failed to determine latest tag"
+  fi
+
+
+  # Reset HEAD
+  log "resetting HEAD to $ref"
+  run "cd $source_path && git reset --hard $ref"
+  [[ $? -eq 0 ]] || abort "git reset failed"
+
+
+  # Create release
+  log "creating release $release_name"
+  run "mkdir $release_path"
+  [[ $? -eq 0 ]] || abort "failed to create $release_path"
+
+  run "rsync -lrpt --exclude=.git $source_path/ $release_path"
+  [[ $? -eq 0 ]] || abort "failed to copy source to $release_path"
+
+  revision=$(run "cd $source_path && git rev-parse --short HEAD")
+  run "echo $revision > $release_path/REVISION"
+
+
+  # Symlink shared resources
+  log "symlinking shared resources"
+  run "ln -sfn $shared_path/config/.env $release_path/.env && \
+
+       rm -dr  $release_path/storage && \
+       ln -sfn $shared_path/storage $release_path/storage && \
+
+       rm -dr  $release_path/web/cpresources && \
+       ln -sfn $shared_path/web/cpresources $release_path/web/cpresources && \
+
+       ln -sfn $shared_path/node_modules $release_path/node_modules"
+  [[ $? -eq 0 ]] || abort "failed to symlink resources"
+
+
+  # Composer packages
+  log "installing composer packages"
+  run "cd $release_path && composer install"
+  [[ $? -eq 0 ]] || abort "failed to install composer packages"
+
+
+  # Node modules
+  log "installing node modules"
+  run "source ~/.bash_profile && \
+       cd $release_path && \
+       yarn install --quiet --production"
+  [[ $? -eq 0 ]] || abort "failed to install node modules"
+
+
+  # Build assets
+  log "building assets"
+  run "source ~/.bash_profile && cd $release_path && yarn run blendid build"
+  [[ $? -eq 0 ]] || abort "failed to build assets"
+
+
+  # Run migrations
+  log "running pending db migrations"
+  run "cd $release_path && \
+      ./craft migrate/all"
+
+
+  # Symlink directories
+  log "linking release"
+  run "ln -sfn $release_path/web $path/public && \
+       ln -sfn $release_path     $path/current"
+
+
+  hook post-deploy || abort "post-deploy hook failed"
+
+  if [[ $TEST -eq 1 ]]; then
+    hook test
+    if [[ $? -ne 0 ]]; then
+      log "tests failed, aborting deploy"
+      exit 1
+    fi
+  else
+    log "ignoring tests"
+  fi
+
+
+  # Cleanup
+  log "cleaning previous releases (keeping $KEEP_RELEASES)"
+  run "ls -1dt $releases_path/* | tail -n +$((KEEP_RELEASES + 1)) | xargs rm -rf"
+  [[ $? -eq 0 ]] || abort "failed to clean up previous releases"
+
+  if [[ "$ENV" == production ]]; then
+    log "notifying slack"
+    slack_notify
+  fi
+
+  # Done
+  log "successfully deployed $ref"
+}
+
+#
+# Get current commit.
+#
+current_commit() {
+  local path
+  path="$(config_get path)"
+  run "cd $path/shared/cached-copy && git rev-parse HEAD"
+}
+
+commit_message() {
+  local commit
+  local path
+
+  commit="$1"
+  path="$(config_get path)"
+
+  run "cd $path/shared/cached-copy && git show --pretty=format:\"%s - %an\" HEAD | head -n 1"
+}
+
+#
+# Require environment arg.
+#
+require_env() {
+  config_section $ENV || abort "[$ENV] config section not defined"
+  [[ -z "$ENV" ]] && abort "<env> required"
+}
+
+#
+# Ensure all changes are committed and pushed before deploying.
+#
+check_for_local_changes() {
+  git --no-pager diff --exit-code --quiet          || abort "commit or stash your changes before deploying"
+  git --no-pager diff --exit-code --quiet --cached || abort "commit your staged changes before deploying"
+  [ -z "$(git rev-list "@{upstream}.." -n 1)" ]      || abort "push your changes before deploying"
+}
+
+#
+# Slack Notifier
+#
+slack_color() {
+  case "$ENV" in
+    integration)
+      echo "#d16d4e"
+      ;;
+    staging)
+      echo "#7c82d1"
+      ;;
+    *)
+      echo "#23d15a"
+      ;;
+  esac
+}
+
+slack_deployed_by_field() {
+  local user
+  user="$(git config --get user.name || echo "$USER")"
+
+  cat <<-END
+{
+  "title": "Deployed By",
+  "value": "$user",
+  "short": true
+}
+END
+}
+
+slack_branch_field() {
+  local branch
+  branch="$(config_get ref)"
+
+  cat <<-END
+{
+  "title": "Branch",
+  "value": "$branch",
+  "short": true
+}
+END
+}
+
+slack_site_field() {
+  local app_url
+  app_url="$(config_get slack_app_url)"
+
+  if [[ -z "$app_url" ]]; then
+    echo "{}"
+  else
+    cat <<-END
+{
+  "title": "URL",
+  "value": "$app_url",
+  "short": false
+}
+END
+  fi
+}
+
+slack_payload() {
+  local commit
+  local message
+
+  commit="$(current_commit)"
+  message="$(commit_message "$commit")"
+   
+  cat <<-END | tr '\n' ' '
+{
+  "channel": "$SLACK_CHANNEL",
+  "username": "Deploy to $ENV",
+  "icon_emoji": "$SLACK_EMOJI",
+  "attachments": [
+    {
+      "fallback": "",
+      "title": "$(current_commit)",
+      "text": "$message",
+      "title_link": "",
+      "color": "$(slack_color)",
+      "fields": [
+        $(slack_deployed_by_field),
+        $(slack_branch_field),
+        $(slack_site_field)
+      ]
+    }
+  ]
+}
+END
+}
+
+slack_notify() {
+  local payload
+  payload="$(slack_payload)"
+
+  curl -s -d "payload=$payload" "$SLACK_URL" > /dev/null
+}
+
+#
+# main
+#
+main() {
+  # Create tmp directory for persisted sockets
+  mkdir -p tmp/sockets
+
+  while [[ $# -ne 0 ]]; do
+    arg="$1"
+    shift
+
+    case "$arg" in
+      -h|--help)
+        usage
+        exit
+        ;;
+
+      -V|--version)
+        version
+        exit
+        ;;
+
+      -c|--config)
+        set_config_path "$1"
+        shift ;;
+
+      -C|--chdir)
+        log "path/sourced $1"
+        cd "$1" || exit 1
+        shift
+        ;;
+
+      -T|--no-tests)
+        TEST=0
+        ;;
+
+      run)
+        require_env;
+        run "cd $(config_get path) && $*"
+        exit
+        ;;
+
+      connect)
+        require_env
+        connect
+        exit
+        ;;
+
+      curr|current)
+        require_env
+        current_commit
+        exit
+        ;;
+
+      setup)
+        require_env
+        setup "$@"
+        exit
+        ;;
+
+      config)
+        config "$@"
+        exit ;;
+
+      *)
+        if [[ -z "$ENV" ]]; then
+          ENV=$arg
+        else
+          REF="$REF $arg"
+        fi
+        ;;
+    esac
+  done
+
+  require_env
+  check_for_local_changes
+
+  # Deploy
+  deploy "${REF:-$(config_get ref)}"
+}
+
+main "$@"

@@ -1,0 +1,33 @@
+{% import '_macros' as macros %}
+{% set videoUrl = block.youtubeUrl ?? block.vimeoUrl %}
+
+{% if videoUrl %}
+  {% set iframeUrl = craft.videoEmbed.getEmbedUrl(videoUrl) %}
+  {% set item = block.imageEntry.one() %}
+  {% set image = item.imageAsset.one() %}
+
+  {% set moreImageContent %}
+    <div class="absolute pin-y pin-x bg-earth-500 opacity-50"></div>
+    <a
+      href="{{ videoUrl }}"
+      class="play-icon"
+      data-iframe-src="{{ iframeUrl }}"
+    >
+      <div class="group-fill-none group-stroke-current text-white">
+        {{ macros.svg('play') }}
+      </div>
+    </a>
+  {% endset %}
+
+  <div data-module="VideoModal">
+    {% include '_partials/image' with {
+      classes: 'max-w-1000 my-48 mx-auto',
+      item: item,
+      image: image,
+      defaultWidth: 1000,
+      srcsetConfig: [375, 750, 1000, 1280, 2000],
+      sizesConfig: {xs: 750, sm: 1000, md: 1280, lg: 2000},
+      moreImageContent: moreImageContent,
+    } only %}
+  </div>
+{% endif %}

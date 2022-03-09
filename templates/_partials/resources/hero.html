@@ -1,0 +1,57 @@
+{% import '_macros' as macros %}
+
+{% set resourceType = resourceType ?? null %}
+{% set date = date ?? null %}
+{% set heading = heading ?? null %}
+{% set subheading = subheading ?? null %}
+{% set intro = intro ?? null %}
+{% set image = image ?? null %}
+{% set imageAlt = imageAlt ?? null %}
+{% set hideResourceBreadcrumb = hideResourceBreadcrumb ?? false %}
+
+<header class="bg-earth-100 border-t border-b border-earth-200 py-32 sm:pt-72 sm:pb-48">
+  <div class="max-w-1000 mx-auto lgd:px-16 flex smd:flex-col-reverse">
+    <div class="flex-grow">
+      <div class="flex justify-between label text-12">
+        <div class="text-teal-600 font-bold">
+          {% if not hideResourceBreadcrumb %}
+            <a href="{{ macros.resourcesIndexPath() }}">Resource</a>
+            {% if resourceType %}
+              <span class="mx-4">&middot;</span>
+            {% endif %}
+          {% endif %}
+
+          {% if resourceType %}
+            {{ resourceType }}
+          {% endif %}
+        </div>
+
+        {% if date %}
+          {{ macros.formattedDate(date) }}
+        {% endif %}
+      </div>
+
+      <div class="py-12 sm:py-48 border-b border-dashed border-earth-500">
+        <h1 class="hd-36">
+          {{ heading }}
+        </h1>
+        {{ subheading }}
+      </div>
+
+      <p class="font-serif text-20 font-light mt-32 leading-loose">
+       {{ intro }}
+      </p>
+    </div>
+
+    {% if image %}
+      <div class="circle-165 md:circle-315 smd:mx-auto smd:mb-32 sm:flex-no-shrink sm:ml-48">
+        <img
+          src="{{ image.url({ width: 630, height: 630 }) }}"
+          srcset="{{ macros.srcset(image, [165, 330, 630], 1) }}"
+          sizes="{{ macros.srcsizes(165, {md: 330}) }}"
+          alt="{{ imageAlt }}"
+        >
+      </div>
+    {% endif %}
+  </div>
+</header>

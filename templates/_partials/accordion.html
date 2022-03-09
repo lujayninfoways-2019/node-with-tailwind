@@ -1,0 +1,89 @@
+{% import '_macros' as macros %}
+{% set heading = heading ?? null %}
+{% set description = description ?? null %}
+{% set items = items ?? null %}
+{% set class = class ?? null %}
+{% set uid = random() %}
+
+{% if items %}
+  <section class="bg-white shadow max-w-1200 mx-auto {{ class }}">
+    {% if heading or description %}
+      <div class="p-32 sm:py-72 sm:px-96">
+        {% if heading %}
+          <h2 class="hd text-30 mb-12">
+            {{ heading }}
+          </h2>
+        {% endif %}
+        {% if description %}
+          <div class="font-serif leading-loose text-20">
+            {{ description }}
+          </div>
+        {% endif %}
+      </div>
+    {% endif %}
+
+    <ul>
+      {% for item in items %}
+        {% set imageClass = loop.first ? null : 'opacity-50' %}
+        {% set headingClass = loop.first ? null : 'text-teal-600' %}
+        {% set toggleeClass = loop.first ? null : 'collapsed' %}
+        {% set togglerClass = loop.first ? 'rotate-90' : 'rotate-270' %}
+        {% set toggleeId = 'accordion-' ~ uid ~ '-item-' ~ loop.index %}
+
+        {% if item.heading and item.description and item.image %}
+          <li
+            class="flex justify-between py-32 pl-32 sm:pl-72 border-t border-earth-200 overflow-hidden"
+            data-module="Accordion"
+          >
+            <div class="relative xsd:hidden mr-16 w-325">
+              <img
+                class="absolute pin-t pin-l w-full transition {{ imageClass }}"
+                src="{{ item.image.url({ width: 325 }) }}"
+                srcset="{{ macros.srcset(item.image, [325, 650]) }}"
+                sizes="{{ macros.srcsizes(325) }}"
+                data-accordion-image
+              >
+            </div>
+            <div class="w-full max-w-575">
+              <h3>
+                <button
+                  class="w-full text-left hd text-18 transition pr-48 sm:pr-96 relative {{ headingClass }}"
+                  data-accordion-heading
+                  aria-controls="{{ toggleeId }}"
+                  aria-expanded="{{ loop.first ? 'true' : 'false' }}"
+                >
+                  {{ item.heading }}
+
+                  <div
+                    class="absolute pin-t pin-r mr-12 sm:mr-48 text-teal-600 h-32 w-32 transition {{ togglerClass }}"
+                    data-accordion-arrow
+                  >
+                    {{ macros.svg('arrow-left') }}
+                  </div>
+                </button>
+              </h3>
+              <div class="pr-48 sm:pr-96 {{toggleeClass }}" id="{{ toggleeId }}" data-togglee="collapsed">
+                <img
+                  class="xs:hidden mt-24"
+                  src="{{ item.image.url({ width: 320 }) }}"
+                  srcset="{{ macros.srcset(item.image, [300, 600]) }}"
+                  sizes="{{ macros.srcsizes(300, {ty: 600 }) }}"
+                >
+                <p class="mt-32">
+                  {{ item.description }}
+                </p>
+                {% if item.linkText and item.linkUrl %}
+                  <p class="mt-16">
+                    <a class="link-hover-underline label font-bold text-12 text-warm-600" href="{{ item.linkUrl }}">
+                      {{ item.linkText }}
+                    </a>
+                  </p>
+                {% endif %}
+              </div>
+            </div>
+          </li>
+        {% endif %}
+      {% endfor %}
+    </ul>
+  </section>
+{% endif %}

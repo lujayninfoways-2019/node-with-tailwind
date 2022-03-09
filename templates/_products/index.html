@@ -1,0 +1,25 @@
+{% extends '_layouts/app' %}
+
+{% block content %}
+
+  {% include '_partials/pages/hero' with {
+    heading: 'Products',
+  } only %}
+
+  {% cache %}
+    {% set products = [] %}
+    {% for product in craft.entries.section('products').all() %}
+      {% set products = products | merge([{
+        thumbnail: product.productThumbnail.one(),
+        heading: product.title,
+        description: product.productBriefDescription,
+        url: product.url,
+      }]) %}
+    {% endfor %}
+
+    {% include '_partials/page-listings' with {
+      pages: products,
+    } only %}
+  {% endcache %}
+
+{% endblock %}

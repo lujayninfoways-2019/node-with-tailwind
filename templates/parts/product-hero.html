@@ -1,0 +1,21 @@
+{% import '_macros' as macros %}
+
+{% extends '_layouts/app' %}
+
+{% block content %}
+  <div class="max-w-1280 mx-auto p-16 sm:px-32">
+    <h1 class="mb-16 hd-36">Parts: Products Page Hero</h1>
+    <div class="mb-32">
+      <a class="link label" href="{{ url('/parts') }}">Back</a>
+    </div>
+  </div>
+
+  <div class="product-theme-teal">
+    {% set product = craft.entries.section('products').one() %}
+    {% include '_products/hero' with {
+      entry: product,
+      shapes: product.productShapes.all(),
+    } only %}
+  </div>
+
+{% endblock %}

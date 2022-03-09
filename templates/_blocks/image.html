@@ -1,0 +1,29 @@
+{% import '_macros' as macros %}
+{% set float = float ?? null %}
+{% set item = block.imageEntry.one() %}
+{% set image = item.imageAsset.one() %}
+
+{# Responsive image configuration #}
+{% if block.fullWidth %}
+  {% set classes = 'max-w-1280 my-48 mx-auto' %}
+  {% set srcsetConfig = [375, 750, 1000, 1280, 2000] %}
+  {% set sizesConfig = {xs: 750, sm: 1000, md: 1280, lg: 2000} %}
+  {% set defaultWidth = 1280 %}
+{% else %}
+  {% set mx = float == 'right' ? 'ml' : 'mr' %}
+  {% set classes = 'max-w-375 my-24 mx-auto xs:' ~ mx ~ '-24 xs:float-' ~ float %}
+  {% set srcsetConfig = [375, 750] %}
+  {% set sizesConfig = {xs: 375} %}
+  {% set defaultWidth = 600 %}
+{% endif %}
+
+{% include '_partials/image' with {
+  classes: classes,
+  item: item,
+  image: image,
+  defaultWidth: defaultWidth,
+  srcsetConfig: srcsetConfig,
+  sizesConfig: sizesConfig,
+} only %}
+
+{# purgecss xs:ml-24 xs:mr-24 xs:float-left xs:float-right  #}

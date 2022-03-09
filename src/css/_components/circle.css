@@ -1,0 +1,66 @@
+@responsive {
+  .circle-60 {
+    @apply overflow-hidden;
+    @apply rounded-circle;
+    height: 60px;
+    width: 60px;
+  }
+
+  .circle-90 {
+    @apply overflow-hidden;
+    @apply rounded-circle;
+    height: 90px;
+    width: 90px;
+  }
+
+  .circle-110 {
+    @apply overflow-hidden;
+    @apply rounded-circle;
+    height: 110px;
+    width: 110px;
+  }
+
+  .circle-165 {
+    @apply overflow-hidden;
+    @apply rounded-circle;
+    height: 165px;
+    width: 165px;
+  }
+
+  .circle-315 {
+    @apply overflow-hidden;
+    @apply rounded-circle;
+    height: 315px;
+    width: 315px;
+  }
+
+  .circle-520 {
+    @apply overflow-hidden;
+    @apply rounded-circle;
+    height: 520px;
+    width: 520px;
+  }
+}
+
+.circle-shadow {
+  @apply relative;
+
+  &::after {
+    @apply absolute;
+    @apply pin-y pin-x;
+    @apply rounded-circle;
+    box-shadow: inset 0 4px 4px rgba(0, 0, 0, 0.4);
+    content: '';
+  }
+}
+
+.shrink {
+  transform: scale(1);
+  transition: transform 0.4s ease;
+  transform-origin: top left;
+  pointer-events: none;
+}
+
+.group:hover .group-hover\:shrink-circle.pin-c {
+  transform: scale(0.95) translate3d(-50%, -50%, 0);
+}

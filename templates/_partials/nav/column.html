@@ -1,0 +1,41 @@
+{% import '_macros' as macros %}
+
+{% set heading = heading ?? null %}
+{% set srHeading = srHeading ?? null %}
+{% set items = items ?? null %}
+{% set withDescription = withDescription ?? false %}
+{% set topLevelName = topLevelName ?? null %}
+
+{% set linkClass = withDescription ? null : 'py-4' %}
+{% set itemHeadingClass = withDescription ? 'mb-4' : null %}
+
+{% if heading %}
+  <h4 class="label text-12 mb-24 navd:line-before">
+    {{ heading }}
+  </h4>
+{% elseif srHeading %}
+  <h4 class="sr-only">
+    {{ srHeading }}
+  </h4>
+{% endif %}
+
+<ul>
+  {% for item in items %}
+    <li class="mb-24">
+      <a
+        class="sub-nav__link {{ linkClass }}"
+        {{ macros.gtm([ 'Top Navigation Click', topLevelName , item.heading ]) }}
+        href="{{ item.url }}"
+      >
+        <h5 class="hd text-14 navd:text-white {{ itemHeadingClass }}">
+          {{ item.heading }}
+        </h5>
+        {% if withDescription and item.description %}
+          <p class="text-12 navd:text-earth-400 tracking-slight">
+            {{ item.description }}
+          </p>
+        {% endif %}
+      </a>
+    </li>
+  {% endfor %}
+</ul>

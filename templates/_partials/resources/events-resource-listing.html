@@ -1,0 +1,36 @@
+{% import '_macros' as macros %}
+{% set entry = entry ?? null %}
+{% set class = class ?? null %}
+{% set isFeatured = isFeatured ?? false %}
+{% set showTags = showTags ?? false %}
+{% set compact = compact ?? false %}
+
+{% if entry %}
+  {% set subheading %}
+    {% if entry.eventDate or entry.eventStartTime %}
+      <div class="leading-loose">
+        {% if entry.eventDate %}
+          <span class="font-bold">
+            {{ macros.formattedDate(entry.eventDate) }}
+          </span>,
+        {% endif %}
+        {% if entry.eventStartTime %}
+          {{ macros.formattedTime(entry.eventStartTime) }}
+        {% endif %}
+        {% if entry.eventEndTime %}
+          - {{ macros.formattedTime(entry.eventEndTime) }}
+        {% endif %}
+      </div>
+    {% endif %}
+  {% endset %}
+
+  {% include '_partials/resources/resource-listing' with {
+    entry: entry,
+    type: 'Event',
+    subheading: subheading,
+    class: class,
+    isFeatured: isFeatured,
+    showTags: showTags,
+    compact: compact,
+  } only %}
+{% endif %}

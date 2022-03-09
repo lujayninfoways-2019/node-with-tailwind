@@ -1,0 +1,27 @@
+{% set formId = formId ?? null %}
+{% set module = module ?? null %}
+{% set gatedUrl = gatedUrl ?? null %}
+{% set class = class ?? null %}
+
+
+{% if formId %}
+  <div
+    class="marketo-form {{ class }}"
+    data-form-id="{{ formId }}"
+    {% if module %}
+      data-module="{{ module }}"
+    {% endif %}
+    {% if gatedUrl %}
+      data-gated-url="{{ gatedUrl }}"
+    {% endif %}
+  >
+    <script src="//app-sjo.marketo.com/js/forms2/js/forms2.min.js"></script>
+    <form id="mktoForm_{{ formId }}">
+      {% include '_partials/loader' with {
+        isDark: true,
+      } only %}
+    </form>
+  </div>
+{% endif %}
+
+{# purgecss marketo-form mktoForm mktoLabel mktoGutter mktoOffset mktoAsterix mktoButtonRow mktoFormRow mktoFieldWrap mktoFormCol mktoCheckboxList mktoError mktoErrorArrow mktoErrorMsg #}

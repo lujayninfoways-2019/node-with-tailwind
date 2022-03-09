@@ -1,0 +1,58 @@
+{% import '_macros' as macros %}
+
+{% set entry = entry ?? null %}
+{% set class = class ?? null %}
+{% set type = type ?? null %}
+{% set date = date ?? null %}
+{% set subheading = subheading ?? null %}
+{% set image = image ?? null %}
+{% set fallbackId = fallbackId ?? null %}
+{% set imageFallbackClass = imageFallbackClass ?? null %}
+{% set showTags = showTags ?? false %}
+{% set compact = compact ?? false %}
+
+{% if entry %}
+  {% set imageClass = 'shadow-inner smd:mb-12 circle-60 mr-12 relative z-1 zoom-container group-hover:zoom-in' %}
+  {% set imageClass = compact ? (imageClass ~ ' sm:circle-110 sm:mr-24') : (imageClass ~ ' sm:circle-165 sm:mr-48') %}
+  {% set imageClass = image is null ? [imageClass, imageFallbackClass] | join(' ') : imageClass %}
+  {% set headingSize = compact ? 'text-18' : 'text-24' %}
+
+  <article class="{{ class }} flex">
+    <a class="block group flex-no-shrink" href="{{ entry.url }}">
+      <div class="{{ imageClass }}">
+        {% if image %}
+          <img
+            class="relative z--1"
+            src="{{ image.url({ width: 330, height: 330 }) }}"
+            srcset="{{ macros.srcset(image, [60, 165, 330], 1) }}"
+            sizes="{{ macros.srcsizes(60, {sm: 165}) }}"
+            alt=""
+          >
+        {% endif %}
+      </div>
+    </a>
+    <div class="flex-grow max-w-450">
+      <a class="group block" href="{{ entry.url }}">
+        <div class="label text-12">
+          {{ type }}
+          {% if date %}
+            &middot; {{ macros.formattedDate(date) }}
+          {% endif %}
+        </div>
+        <h3 class="hd mt-8 mb-4 resource-listing-link {{ headingSize }}">
+          {{ entry.title }}
+        </h3>
+        {{ subheading }}
+      </a>
+      {% if showTags %}
+        <div class="mt-24 font-heavy text-teal-500 text-14">
+          {% for tag in entry.resourceTags[:3] %}
+            <a class="tag-link" href="{{ macros.resourcesIndexPath(null, tag.slug) }}">
+              {{ tag.title -}}
+            </a>{{ not loop.last ? ', ' }}
+          {% endfor %}
+        </div>
+      {% endif %}
+    </div>
+  </article>
+{% endif %}

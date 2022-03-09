@@ -1,0 +1,18 @@
+{% import '_macros' as macros %}
+{% set text = text ?? null %}
+{% set url = url ?? null %}
+{% set class = class ?? null %}
+
+{% if text and url %}
+  <li>
+    <h3>
+      <a
+        class="main-nav__link {{ class }}"
+        href="{{ url }}"
+        {{ macros.gtm([text, craft.app.request.absoluteUrl]) }}
+      >
+        {{ text }}
+      </a>
+    </h3>
+  </li>
+{% endif %}

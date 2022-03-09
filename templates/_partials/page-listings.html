@@ -1,0 +1,31 @@
+{% import '_macros' as macros %}
+{% set pages = pages ?? null %}
+
+{% if pages %}
+  <ul class="max-w-1000 mx-auto py-32 px-16">
+    {% for page in pages %}
+      {% if page.heading and page.description and page.thumbnail and page.url %}
+        <li class="flex mb-24 pb-24 {{ not loop.last ? 'border-b border-faded' }}">
+          <a href="{{ page.url }}" class="circle-60 sm:circle-110 mr-16 flex-no-shrink zoom-container hover:zoom-in">
+            <img
+              src="{{ page.thumbnail.url({ width: 110 }) }}"
+              srcset="{{ macros.srcset(page.thumbnail, [60, 110, 220], 1) }}"
+              srcsizes="{{ macros.srcsizes(60, {sm: 110}) }}"
+              alt=""
+            >
+          </a>
+          <div class="flex-grow">
+            <h2 class="hd text-24 mb-12">
+              <a href="{{ page.url }}" class="link-hover-underline">
+                {{ page.heading }}
+              </a>
+            </h2>
+            <p class="leading-loose max-w-575">
+              {{ page.description }}
+            </p>
+          </div>
+        </li>
+      {% endif %}
+    {% endfor %}
+  </ul>
+{% endif %}

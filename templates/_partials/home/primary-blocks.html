@@ -1,0 +1,61 @@
+{% import '_macros' as macros %}
+
+<section class="max-w-1200 mx-auto my-32 sm:-mt-96 relative z-2">
+  <h2 class="xs:label xs:text-12 xs:text-center mb-32 px-16">
+    {{ entry.homePrimaryBlocksIntro }}
+  </h2>
+
+  <div class="home-primary-blocks px-16">
+    <ul>
+      {% for block in entry.homePrimaryBlocks.all() %}
+        {% set blockEntry = block.entry.one() %}
+        {% set heading = block.heading ?? blockEntry.title %}
+        {% set bgImage = block.backgroundImage.one() ?? blockEntry.solutionThumbnail.one() ?? blockEntry.productThumbnail.one() %}
+        <li>
+          <a
+            {{ macros.gtm([ 'Homepage', 'Solutions Cards', heading ]) }}
+            href="{{ blockEntry.url }}"
+            data-title="{{ heading }}"
+            style="background-image: url('{{ bgImage.url({ width: 200 }) }}');"
+          >
+            <h3>
+              {{ heading }}
+            </h3>
+          </a>
+        </li>
+      {% endfor %}
+    </ul>
+  </div>
+</section>
+
+{% set image = entry.homePrimaryBlocksImage.one() %}
+
+<section class="max-w-1000 mx-auto px-16 sm:flex">
+  <div class="flex-grow sm:mr-32">
+    <h2 class="hd text-24 sm:text-36 leading-tight mb-24">
+      {{ entry.homePrimaryBlocksHeading }}
+    </h2>
+    <div class="rtf tracking-slight">
+      {% if image %}
+        <img
+          class="sm:hidden float-right w-1/3 m-12 mr-0"
+          src="{{ image.url({ width: 220 }) }}"
+          srcset="{{ macros.srcset(image, [120, 220, 440]) }}"
+          srcsizes="{{ macros.srcsizes(120, {ty: 220}) }}"
+          alt=""
+        >
+      {% endif %}
+      {{ entry.homePrimaryBlocksText }}
+    </div>
+  </div>
+  {% if image %}
+    <div class="smd:hidden flex-no-shrink sm:w-1/3 md:w-415">
+      <img
+        src="{{ image.url({ width: 400 }) }}"
+        srcset="{{ macros.srcset(image, [300, 400, 800]) }}"
+        srcsizes="{{ macros.srcsizes(300, {lg: 400}) }}"
+        alt=""
+      >
+    </div>
+  {% endif %}
+</section>

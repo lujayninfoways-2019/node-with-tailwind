@@ -1,0 +1,17 @@
+{% set attribution = attribution ?? null %}
+{% set text = text ?? null %}
+{% set float = float ?? null %}
+
+{% if text %}
+  <blockquote class="relative p-24 ty:p-72 sm:pt-96 sm:pb-160 sm:float-{{ float }}">
+    <div class="absolute pin-x pin-y -m-32 bg-pattern-rings z--1"></div>
+    <div class="max-w-375 mx-auto">
+      <p class="font-serif font-light mb-12 text-teal-500 text-20">
+        {{ text }}
+      </p>
+      {{ attribution }}
+    </div>
+  </blockquote>
+{% endif %}
+
+{# purgecss sm:float-left sm:float-right #}

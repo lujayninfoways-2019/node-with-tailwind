@@ -1,0 +1,17 @@
+{% extends '_layouts/app' %}
+
+{% block js %}
+  {{ parent() }}
+  <script src="{{ rev('js/parts.js') }}"></script>
+{% endblock %}
+
+{% block content %}
+<div class="max-w-1280 mx-auto p-16 sm:px-32">
+  <h1 class="hd-36 mb-16">Parts: Colors</h1>
+  <div class="mb-32">
+    <a class="link label" href="{{ url('/parts') }}">Back</a>
+  </div>
+
+  <div id="color-palette"></div>
+</div>
+{% endblock %}

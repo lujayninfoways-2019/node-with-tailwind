@@ -1,0 +1,21 @@
+{% extends '_layouts/app' %}
+
+{% set navIsTransparent = true %}
+
+{% block content %}
+
+  {% include '_partials/pages/hero' with {
+    heading: entry.title,
+    description: entry.heroDescription,
+    image: entry.resourceHeroFeaturedImage.one() ?? null,
+    imageAlt: entry.heroFeaturedImageAltText ?? null,
+    heroBg: entry.heroBackgroundImage.one() ?? null,
+  } only %}
+
+  {% cache %}
+    {% include '_partials/page-blocks' with {
+      pageBlocks: entry.pageBlocks,
+    } only %}
+  {% endcache %}
+
+{% endblock %}

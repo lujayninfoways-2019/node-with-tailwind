@@ -1,0 +1,24 @@
+{
+  "src": "./src",
+  "dest": "./web/assets",
+
+  "javascripts": {
+    "src": "js",
+    "dest": "js"
+  },
+
+  "stylesheets": {
+    "src": "css",
+    "dest": "css"
+  },
+
+  "images": {
+    "src": "images",
+    "dest": "images"
+  },
+
+  "fonts": {
+    "src": "fonts",
+    "dest": "fonts"
+  }
+}

@@ -1,0 +1,153 @@
+{%- macro svg(icon) -%}
+  {% set path = '@webroot/' ~ rev('images/icons/' ~ icon ~ '.svg') %}
+  {% if craft.app.env == 'dev' %}
+    {% set path = path | split('?') | first %}
+  {% endif %}
+  {{ svg( path)}}
+{%- endmacro -%}
+
+{% macro srcset(image, outputWidths, aspectRatio) %}
+  {# setup #}
+  {%- set outputWidths = outputWidths | default([640, 1024, 1600]) -%}
+  {%- set srcset = [] -%}
+
+  {# if output width is smaller than or equal to the original image width #}
+  {%- for outputWidth in outputWidths -%}
+    {%- if outputWidth <= image.width -%}
+      {%- if aspectRatio -%}
+        {%- set transformOptions = { width: outputWidth, height: outputWidth * aspectRatio } -%}
+      {%- else -%}
+        {%- set transformOptions = { width: outputWidth } -%}
+      {%- endif -%}
+
+      {%- set srcset = srcset | merge([image.url(transformOptions) ~ ' ' ~ outputWidth ~ 'w']) -%}
+    {%- endif -%}
+  {%- endfor -%}
+
+  {# output srcset #}
+  {{- srcset | join(', ') -}}
+{% endmacro %}
+
+{% macro srcsizes(default, bps) %}
+  {%- set sizes = [] -%}
+
+  {% for bp in bps|keys %}
+    {% switch bp %}
+      {% case 'ty' %}
+        {% set bpPx = '400px' %}
+      {% case 'xs' %}
+        {% set bpPx = '600px' %}
+      {% case 'sm' %}
+        {% set bpPx = '768px' %}
+      {% case 'md' %}
+        {% set bpPx = '960px' %}
+      {% case 'lg' %}
+        {% set bpPx = '1024px' %}
+    {% endswitch %}
+    {% set sizes = sizes | merge(['(min-width: ' ~ bpPx ~ ') ' ~ bps[bp] ~ 'px']) %}
+  {% endfor %}
+
+  {# add default size last #}
+  {%- set sizes = sizes | merge ([default ~ 'px']) -%}
+
+  {# output sizes #}
+  {{- sizes | join(', ') -}}
+{% endmacro %}
+
+{% macro responsiveBgImage(image = null, selector = null, sizes = [600, 767, 1024, 1200]) %}
+  {% if image and selector %}
+    <style>
+      {{ selector }} {
+        background-image: url('{{ image.url({ width: sizes[0] }) }}');
+      }
+
+      {% for size in sizes %}
+        {% if not loop.last %}
+          @media (min-width: {{ size + 1 }}px) {
+            {{ selector }} {
+              background-image: url('{{ image.url({ width: sizes[loop.index] }) }}');
+            }
+          }
+        {% endif %}
+      {% endfor %}
+    </style>
+  {% endif %}
+{% endmacro %}
+
+{% macro formattedDate(date) %}
+  <time datetime="{{ date | date('Y-m-d') }}">
+    {{ date | date('F j, Y') }}
+  </time>
+{% endmacro %}
+
+{% macro formattedTime(time) %}
+  <time datetime="{{ time | date('h:i:sa') }}">
+    {{ time | date('g:ia') }}
+  </time>
+{% endmacro %}
+
+{% macro resourcesIndexPath(type, topic, baseUrl) -%}
+  {% set baseUrl = baseUrl ?? url('resources') %}
+
+  {%- if type or topic -%}
+    {%- set queryParams = [] -%}
+    {%- if type -%}
+      {%- set queryParams = queryParams | merge(['type=' ~ type]) -%}
+    {%- endif -%}
+    {%- if topic -%}
+      {%- set queryParams = queryParams | merge(['topic=' ~ topic]) -%}
+    {%- endif -%}
+    {%- set baseUrl = baseUrl ~ '?' ~ queryParams | join('&') -%}
+  {%- endif -%}
+
+  {%- return baseUrl -%}
+{% endmacro %}
+
+{% macro getNextEvent() %}
+  {% set params = {
+    section : 'events',
+    order : 'eventDate asc',
+    eventDate : '>=' ~ now | date('Y-m-d'),
+    limit : '1'
+  } %}
+  {% return craft.entries(params).one() %}
+{% endmacro %}
+
+{% macro fillInResources(existingResources, type = '', limit = 0, idsToSkip = []) %}
+  {% if type == 'all' %}
+    {% set type = ['blog', 'caseStudies', 'events', 'webinars', 'whitepapers'] %}
+  {% endif %}
+
+  {% set resourcesNeeded = limit - existingResources | length %}
+
+  {% if resourcesNeeded > 0 %}
+    {% set idsToSkip = ['not'] | merge(idsToSkip) %}
+    {% set idsToSkip = idsToSkip | merge(existingResources.ids() ?? []) %}
+    {% set resources = existingResources.all() ?? [] %}
+    {% set resources = existingResources | merge(
+      craft.entries.section(type)
+        .with(['resourceHeroFeaturedImage'])
+        .limit(resourcesNeeded)
+        .id(idsToSkip)
+        .all()
+      )
+    %}
+  {% else %}
+    {% set resources = existingResources.all() %}
+  {% endif %}
+
+  {% return resources %}
+{% endmacro %}
+
+{% macro gtm(arr) %}
+  data-track-gtm="{{ arr | filter | join('|') }}"
+{% endmacro %}
+
+{% macro formattedAuthor(person) %}
+  {% set parts = [
+    'by ' ~ person.title,
+    person.peopleJobTitle,
+    person.peopleCompany ?? 'FiscalNote'
+  ] %}
+  {{ parts | filter | join(', ') }}
+{% endmacro %}

@@ -1,0 +1,19 @@
+{% set heading = heading ?? null %}
+{% set description = description ?? null %}
+{% set productsIntro = productsIntro ?? null %}
+
+{% if productsIntro %}
+  {% if productsIntro.type == 'grid' %}
+    {% include '_solutions/products-intro/grid' with {
+      heading: heading,
+      description: description,
+      productItems: productsIntro.items
+    } only %}
+  {% else %}
+    {% include '_solutions/products-intro/accordion' with {
+      heading: heading,
+      description: description,
+      productItems: productsIntro.items
+    } only %}
+  {% endif %}
+{% endif %}

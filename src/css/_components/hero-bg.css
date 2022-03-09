@@ -1,0 +1,123 @@
+.hero-bg-shape {
+  @apply absolute;
+  @apply opacity-15;
+
+  & svg {
+    @apply w-full;
+  }
+}
+
+@for $i from 1 to 9 {
+  .hero-bg-shape:nth-child($i) {
+    animation: orbit-$i 50s linear infinite;
+  }
+}
+
+@for $i from 1 to 9 by 2 {
+  @screen xsd {
+    .hero-bg-shape:nth-child($i) {
+      @apply hidden;
+    }
+  }
+}
+
+/* THEMES */
+
+.product-theme-purple {
+  @apply bg-purple-700;
+
+  & .hero-bg-shape {
+    &.-light {
+      @apply text-earth-800;
+    }
+
+    &.-dark {
+      @apply text-purple-900;
+    }
+
+    &.-offset {
+      @apply text-warm-800;
+    }
+  }
+}
+
+.product-theme-teal {
+  @apply bg-teal-800;
+
+  & .hero-bg-shape {
+    &.-light {
+      @apply text-teal-600;
+    }
+
+    &.-dark {
+      color: #021b1d;
+    }
+
+    &.-offset {
+      @apply text-warm-200;
+    }
+  }
+}
+
+.product-theme-blue {
+  background-color: #243345;
+
+  & .hero-bg-shape {
+    &.-light {
+      @apply text-teal-600;
+    }
+
+    &.-dark {
+      @apply text-purple-900;
+    }
+
+    &.-offset {
+      @apply text-warm-400;
+    }
+  }
+}
+
+.product-theme-earth {
+  background-color: #47363b;
+
+  & .hero-bg-shape {
+    &.-light {
+      @apply text-earth-800;
+    }
+
+    &.-dark {
+      @apply text-purple-900;
+    }
+
+    &.-offset {
+      @apply text-warm-400;
+    }
+  }
+}
+
+.product-theme-red {
+  background-color: #51180b;
+
+  & .hero-bg-shape {
+    &.-light {
+      background-color: #992209;
+    }
+
+    &.-dark {
+      background-color: #280902;
+    }
+
+    &.-offset {
+      @apply text-warm-200;
+    }
+  }
+}
+
+@keyframes orbit {
+  from {
+    transform: rotate(0deg) translate(-20px, -50px) rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg) translate(-20px, -50px) rotate(-360deg);
+  }
+}

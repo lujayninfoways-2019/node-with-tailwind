@@ -1,0 +1,33 @@
+{% import '_macros' as macros %}
+
+{% set entry = entry ?? null %}
+{% set type = type ?? null %}
+{% set date = date ?? null %}
+{% set subheading = subheading ?? null %}
+{% set class = class ?? null %}
+{% set isFeatured = isFeatured ?? false %}
+{% set showTags = showTags ?? false %}
+{% set compact = compact ?? false %}
+
+{% if entry %}
+  {% set image = entry.resourceHeroFeaturedImage[0] ?? null %}
+  {# associate this entry with a number 1 thru 4 so fallback is the same no matter where this appears #}
+  {% set fallbackId = (entry.id % 4) + 1 %}
+  {% set imageFallbackClass = 'bg-fallback-' ~ fallbackId ~ ' shadow-inner zoomable hover:zoom-bg' %}
+
+  {% set partial = isFeatured ? 'featured-resource-listing' : 'default-resource-listing' %}
+  {% include '_partials/resources/' ~ partial with {
+    entry: entry,
+    type: type,
+    date: date,
+    subheading: subheading,
+    class: class,
+    image: image,
+    fallbackId: fallbackId,
+    imageFallbackClass: imageFallbackClass,
+    showTags: showTags,
+    compact: compact,
+  } only %}
+{% endif %}
+
+{# purgecss bg-fallback-1 bg-fallback-2 bg-fallback-3 bg-fallback-4 #}

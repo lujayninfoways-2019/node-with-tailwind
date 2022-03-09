@@ -1,0 +1,31 @@
+{% set name = name ?? null %}
+{% set content = content ?? null %}
+{% set footer = footer ?? null %}
+
+{% if name and content %}
+  <li>
+    <h3>
+      <button
+        class="main-nav__link"
+        data-sub-nav-trigger
+        aria-controls="{{ name | kebab }}-sub-nav"
+        aria-expanded="false"
+      >
+        {{ name }}
+      </button>
+    </h3>
+
+    <section class="sub-nav {{ footer ? 'pb-8' }}" id="{{ name | kebab }}-sub-nav">
+      <div class="max-w-1200 mx-auto px-16 nav:px-24">
+        <div class="nav:flex">
+          {{ content }}
+        </div>
+        {% if footer %}
+          <div class="nav:border-t border-earth-300 mt-24 nav:mt-48">
+            {{ footer }}
+          </div>
+        {% endif %}
+      </div>
+    </section>
+  </li>
+{% endif %}

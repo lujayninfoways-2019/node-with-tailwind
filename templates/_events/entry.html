@@ -1,0 +1,94 @@
+{% import '_macros' as macros %}
+{% extends '_layouts/app' %}
+
+{% block content %}
+  {% set image = entry.resourceHeroFeaturedImage.one() %}
+  {% set subheading %}
+    <div class="grid mt-12 leading-loose">
+      {% if entry.eventDate or entry.eventStartTime %}
+        <div class="grid-item w-1/2 sm:w-1/3">
+          {% if entry.eventDate %}
+            <div class="font-bold">
+              {{ macros.formattedDate(entry.eventDate) }}
+            </div>
+          {% endif %}
+          {% if entry.eventStartTime %}
+            {{ macros.formattedTime(entry.eventStartTime) }}
+          {% endif %}
+          {% if entry.eventEndTime %}
+            - {{ macros.formattedTime(entry.eventEndTime) }}
+          {% endif %}
+        </div>
+      {% endif %}
+
+      {% if entry.eventLocationName or entry.eventLocationAddress %}
+        <div class="grid-item w-1/2 sm:w-1/3">
+          {% if entry.eventLocationName %}
+            <div class="font-bold">{{ entry.eventLocationName }}</div>
+          {% endif %}
+          {% if entry.eventLocationAddress %}
+            {{ entry.eventLocationAddress | nl2br }}
+          {% endif %}
+        </div>
+      {% endif %}
+    </div>
+  {% endset %}
+
+  {% include '_partials/resources/hero' with {
+    resourceType: 'Event',
+    heading: entry.title,
+    subheading: subheading,
+    intro: entry.heroDescription,
+    image: image,
+    imageAlt: entry.heroFeaturedImageAltText,
+  } only %}
+
+  {# Off-Page Registration CTA #}
+  {% if entry.eventRegistrationUrl and not entry.eventCventEmbedCode %}
+    <section class="bg-earth-200 bg-pattern-bubbles-faded py-48 px-16 text-center">
+      <a
+        class="button button-primary button-hover-default"
+        href="{{ entry.eventRegistrationUrl }}"
+      >
+        {{ entry.eventRegistrationButtonText ?? 'Register' }}
+      </a>
+    </section>
+
+    <div class="pt-48">
+      {% include '_blocks/text' with { block: {
+        text: entry.eventBodyText ?? null
+      }} %}
+    </div>
+  {% endif %}
+
+  {# Embedded Registration Form #}
+  {% if entry.eventCventEmbedCode %}
+    <div class="flex smd:flex-col-reverse max-w-1000 mx-auto py-48 px-16">
+      <div class="rtf sm:flex-grow">
+        {{ entry.eventBodyText }}
+      </div>
+
+      <div class="w-full smd:mb-72 sm:flex-no-shrink sm:max-w-375 sm:ml-48">
+        <div class="label text-12 mb-32">
+        All fields are required
+        </div>
+
+        {{ entry.eventCventEmbedCode | raw }}
+        {# purgecss cvt-main-app cw-wrapper cw-wrapper cw-content cw-control cw-button cw-message-error #}
+      </div>
+    </div>
+  {% endif %}
+
+  {% cache %}
+    {% include '_partials/page-blocks' with {
+      pageBlocks: entry.pageBlocks,
+    } only %}
+  {% endcache %}
+
+  {% set relatedResources = entry.resourceRelatedResources %}
+  {% include '_partials/resources/related-resources' with {
+    currentEntryId: entry.id,
+    entries: relatedResources,
+    type: entry.type,
+  } only %}
+{% endblock %}

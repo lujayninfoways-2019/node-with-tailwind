@@ -1,0 +1,200 @@
+{% import '_macros' as macros %}
+{% import _self as localmacros %}
+{% extends '_layouts/app' %}
+
+{% set navIsTransparent = true %}
+
+{% set types = {
+  blog: 'Blog',
+  caseStudies: 'Case Study',
+  whitepapers: 'Whitepaper',
+  events: 'Event',
+  webinars: 'Webinar',
+} %}
+
+{# This page accepts `type` and `topic` as query params #}
+{% set queryType = craft.app.request.getQueryParam('type') %}
+{% set queryTopic = craft.app.request.getQueryParam('topic') %}
+
+{% set sections = queryType %}
+{% if not queryType %}
+  {% set sections = [] %}
+  {% for type in types | keys %}
+    {% set sections = sections | merge([type]) %}
+  {% endfor %}
+{% endif %}
+
+{% set params = {
+  section: sections,
+  limit: 10,
+  with: ['resourceTags', 'resourceHeroFeaturedImage'],
+} %}
+
+{% if queryTopic %}
+  {% set params = params | merge({
+    relatedTo: {
+      targetElement: craft.categories.group('topics').slug(queryTopic),
+      field: 'resourceTags',
+    }
+  }) %}
+{% endif %}
+
+{% paginate craft.entries(params) as pageInfo, results %}
+
+{# Determine featured entry #}
+{% set featuredType = queryType ?? entry.resourcesFeaturedResourceType %}
+{% set fieldName = 'resourcesFeaturedFor' ~ featuredType | first | upper ~ featuredType[1:] %}
+{% set featuredEntry = entry[fieldName] ? entry[fieldName].one() : null %}
+
+{# Default to most recent in section #}
+{% if featuredEntry is null %}
+  {% set featuredEntry = craft.entries.section(featuredType).one() %}
+{% endif %}
+
+{% macro filterItem(name, isActive, filterLink, clearLink) %}
+  {% import '_macros' as macros %}
+  {% set activeClasses = 'active-link-hover bg-white sm:bg-teal-100 relative rounded' %}
+  {% set activeLinkHover = 'text-teal-400 hover:text-warm-600' %}
+
+  <li class="py-8 pl-12 pr-32 mb-8 {{ isActive ? activeClasses }}">
+    {# Filter link #}
+    <a
+      class="block {{ isActive ? activeLinkHover : 'resource-filter-link hover:text-teal-400'}}"
+      {{ macros.gtm([ 'Resource Navigation', name,  craft.app.request.absoluteUrl ]) }}
+      href="{{ filterLink }}"
+    >
+      {{ name }}
+    </a>
+
+    {# Clear filter #}
+    {% if isActive %}
+      <a
+        class="absolute pin-y pin-r mr-12 group-stroke-warm-600 flex items-center"
+        {{ macros.gtm([ 'Resource Navigation', name,  craft.app.request.absoluteUrl ]) }}
+        href="{{ clearLink }}"
+      >
+        {{ macros.svg('close') }}
+      </a>
+    {% endif %}
+  </li>
+{% endmacro %}
+
+
+{% block content %}
+  <header class="bg-earth-800 py-72 overflow-y-hidden">
+    {% include '_partials/resources/' ~ featuredType ~ '-resource-listing' with {
+        entry: featuredEntry,
+        class: 'max-w-1000 mx-auto',
+        isFeatured: true,
+    } only %}
+  </header>
+
+  <div class="sm:flex max-w-1000 mx-auto sm:py-48 sm:px-16" data-module="Toggle">
+    {# FILTERS TOGGLE #}
+    <div class="flex justify-center items-center py-12 px-16 bg-white border-b border-earth-400 mx-24 sm:hidden">
+      <div>{{ macros.svg('filter') }}</div>
+      <button class="button bg-white text-purple-700 font-bold" aria-controls="filters" data-toggled-text="Hide Filters">
+         Show Filters
+      </button>
+    </div>
+
+    <section
+      id="filters"
+      class="smd:collapsed smd:flex smd:bg-earth-200 sm:w-175 flex-no-shrink sm:mr-48"
+      data-togglee="smd:collapsed"
+    >
+        {# TYPE FILTERS #}
+        <div class="smd:w-1/2 smd:p-8 sm:mb-32">
+          <h2 class="label px-12 text-12 mb-16">
+            Type
+          </h2>
+          <ul class="font-heavy text-teal-500 text-14">
+            {% for type in types | keys %}
+              {% set isActive = type === queryType %}
+              {% set filterLink = macros.resourcesIndexPath(type, queryTopic, entry.url) %}
+              {% set clearLink = macros.resourcesIndexPath(null, queryTopic, entry.url) %}
+
+              {{ localmacros.filterItem(types[type], isActive, filterLink, clearLink) }}
+            {% endfor %}
+          </ul>
+        </div>
+
+        {# TOPIC FILTERS #}
+        <div class="smd:w-1/2 smd:p-8">
+          <h2 class="label px-12 text-12 mb-16">
+            Topic
+          </h2>
+          <ul class="font-heavy text-teal-500 text-14">
+            {% set queryTopicName = null %}
+            {% set topics = craft.categories.group('topics').all() %}
+            {% for topic in topics %}
+              {% set isActive = topic.slug === queryTopic %}
+              {% set filterLink = macros.resourcesIndexPath(queryType, topic.slug, entry.url) %}
+              {% set clearLink = macros.resourcesIndexPath(queryType, null, entry.url) %}
+
+              {{ localmacros.filterItem(topic, isActive, filterLink, clearLink) }}
+
+              {% if isActive %}
+                {% set queryTopicName = topic.title %}
+              {% endif %}
+            {% endfor %}
+          </ul>
+        </div>
+    </section>
+
+    <section class="flex-grow smd:pt-32 smd:px-16">
+      {# Show result count if they are filtered #}
+      {% if queryType or queryTopic %}
+        <div class="font-serif text-18 mb-48">
+          <span class="text-teal-800 font-bold">{{ pageInfo.total }}</span>
+          {{ pageInfo.total == 1 ? 'result' : 'results' }}
+
+          {% if queryType %}
+            for <span class="text-teal-800 font-bold">{{ types[queryType] | lower }}</span>
+          {% endif %}
+
+          {% if queryTopic %}
+            about <span class="text-teal-800 font-bold">{{ queryTopicName | lower }}</span>
+          {% endif %}
+        </div>
+      {% endif %}
+
+      <div class="resources-results mb-16">
+        {% for entry in results %}
+          {% include '_partials/resources/' ~ entry.type ~ '-resource-listing' with {
+            entry: entry,
+            class: 'mb-32',
+            showTags: true,
+          } only %}
+        {% endfor %}
+      </div>
+
+      {# AJAX more results #}
+      {% set baseUrl = pageInfo.nextUrl %}
+      {% set qs = craft.app.request.queryStringWithoutPath %}
+      {% set nextUrl = baseUrl ? [baseUrl, qs] | filter | join('?') : null %}
+
+      <div id="resources-more-results" class="hidden" data-module="Pagination">
+        <button class="button button-primary button-hover-default" data-href="{{ nextUrl }}">
+          Load more
+        </button>
+      </div>
+
+      {# No JS backup #}
+      <noscript>
+        <div class="resources-pagination">
+          <div class="pt-32">
+            {% if pageInfo.prevUrl %}
+              <a class="text-teal-500 mr-16" href="{{ pageInfo.prevUrl }}">Previous</a>
+            {% endif %}
+
+            {% if pageInfo.nextUrl %}
+              <a class="text-teal-500" href="{{ pageInfo.nextUrl }}">Next</a>
+            {% endif %}
+          </div>
+        </div>
+      </noscript>
+    </div>
+  </div>
+
+{% endblock %}

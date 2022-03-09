@@ -1,0 +1,42 @@
+{% import '_macros' as macros %}
+{% extends '_layouts/app' %}
+
+{% block content %}
+  {% set heroBg = entry.solutionHeroImage.one() %}
+  {% if heroBg %}
+    {{ macros.responsiveBgImage(heroBg, '.solution-hero-bg') }}
+  {% endif %}
+
+  <div class="bg-earth-100">
+    <header class="relative z-1 max-w-1280 mx-auto pt-160 mb-48">
+      <div class="max-w-840 bg-white hd shadow text-18 xs:text-24 xsd:-mt-32 smd:mx-16 sm:pb-48 md:text-36 sm:ml-80">
+        <div class="border-warm-200 p-16 xs:p-32 smd:border-t-16 sm:border-l-16">
+          <h1 class="inline">{{ entry.title }}</h1>
+          <span class="font-light text-earth-700">
+            {{ entry.solutionDescription }}
+          </span>
+        </div>
+      </div>
+
+      <div class="solution-hero-bg absolute pin-t pin-x bg-earth-300 z--1 smd:aspect-ratio-16/9 sm:pin-y sm:ml-96 sm:mb-48 "></div>
+    </header>
+
+    <main>
+      {% include '_solutions/key-areas' with {
+        keyAreas: entry.keyAreas.all(),
+      } %}
+
+      {% include '_solutions/products-intro/block' with {
+        heading: entry.productIntroHeading,
+        description: entry.productIntroDescription,
+        productsIntro: entry.productIntroProducts.one(),
+      } only %}
+
+      {% cache %}
+        {% include '_partials/page-blocks' with {
+          pageBlocks: entry.pageBlocks
+        } only %}
+      {% endcache %}
+    </main>
+  </div>
+{% endblock %}

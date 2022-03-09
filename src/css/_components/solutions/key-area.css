@@ -1,0 +1,15 @@
+.key-area {
+  @screen sm {
+    & p {
+      width: calc(100% - 420px);
+    }
+
+    &.-even p {
+      float: right;
+    }
+  }
+
+  & .line-before::before {
+    max-width: 412px;
+  }
+}

@@ -1,0 +1,35 @@
+{% import '_macros' as macros %}
+{% extends '_layouts/ajax' %}
+
+{% set headshot = entry.peopleHeadshot.one() %}
+
+{% block content %}
+  <div class="flex flex-col h-full">
+    <header class="flex-no-shrink relative text-center pb-32 px-16 {{ not headshot ? 'pt-32' }}">
+      {% if headshot %}
+        <div class="circle-165 mb-32 mx-auto">
+          <img src="{{ headshot.url({ width: 330 }) }}" alt="">
+        </div>
+      {% endif %}
+
+      <h2 class="hd text-18 text-earth-800" id="member-modal-title">
+        {{ entry.title }}
+      </h2>
+      {% if entry.peopleJobTitle %}
+        <p class="label text-12 text-purple-700">
+          {{ entry.peopleJobTitle }}
+        </p>
+      {% endif %}
+      <button class="absolute pin-t pin-r p-16 group-stroke-warm-600 {{ headshot ? 'mt-48' }}" data-label="Close modal" data-modal-close>
+        {{ macros.svg('close') }}
+      </button>
+      <div class="bg-white absolute pin-y pin-x z--1 {{ headshot ? 'mt-48' }}"></div>
+    </header>
+
+    <div class="flex-grow bg-white pb-32 overflow-auto">
+      <div class="max-w-575 mx-auto px-16 rtf text-14">
+        {{ entry.peopleBio }}
+      </div>
+    </div>
+  </div>
+{% endblock %}

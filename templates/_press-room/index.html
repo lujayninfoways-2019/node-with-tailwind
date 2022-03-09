@@ -1,0 +1,30 @@
+{% extends '_layouts/app' %}
+
+{% block content %}
+
+  {% include '_partials/pages/hero' with {
+    heading: entry.title,
+  } only %}
+
+  <div class="max-w-1000 mx-auto py-32 px-16">
+    {% cache %}
+      {% for entry in craft.entries.section('pressReleases').all() %}
+        {% set date = entry.heroPublicationDate ?? entry.postDate %}
+        {% set subheading %}
+          <p class="tracking-slight">
+            {{ entry.heroDescription }}
+          </p>
+        {% endset %}
+
+        {% include '_partials/resources/resource-listing' with {
+          entry: entry,
+          type: 'Press Release',
+          date: date,
+          subheading: subheading,
+          class: 'mb-32',
+        } only %}
+      {% endfor %}
+    {% endcache %}
+  </div>
+
+{% endblock %}

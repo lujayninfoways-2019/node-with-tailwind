@@ -1,0 +1,24 @@
+{% import '_macros' as macros %}
+
+{% extends '_layouts/app' %}
+
+{% block content %}
+  <header class="flex p-32 sm:py-80 text-white justify-center bg-purple-700 bg-pattern-bubbles">
+    <div class="max-w-1000 mx-auto lgd:px-16 text-center">
+      <h1 class="font-black text-250 xsd:text-120">
+        404
+      </h1>
+      <div class="sm:text-18 xs:-mt-40">
+        <p class="mb-16">
+          Sorry about that. The page you’re looking for has somehow eluded us.
+        </p>
+        <p class="mb-16">
+          Maybe you can find what you’re looking for on the
+          <a class="link link-404" href="/">
+            homepage
+          </a>.
+        </p>
+      </div>
+    </div>
+  </header>
+{% endblock %}

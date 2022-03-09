@@ -1,0 +1,41 @@
+{% import '_macros' as macros %}
+{% extends '_layouts/app' %}
+
+{% block content %}
+  {% set date = entry.heroPublicationDate ?? entry.postDate %}
+  {% set image = entry.resourceHeroFeaturedImage.one() %}
+  {% set author = entry.heroAuthor.one() %}
+
+  {% if author %}
+    {% set subheading %}
+      <p>
+        {{ macros.formattedAuthor(author) }}
+      </p>
+    {% endset %}
+  {% endif %}
+
+  {% include '_partials/resources/hero' with {
+    resourceType: 'Blog',
+    date: date,
+    heading: entry.title,
+    subheading: subheading ?? null,
+    intro: entry.heroDescription,
+    image: image,
+    imageAlt: entry.heroFeaturedImageAltText,
+  } only %}
+
+  {% cache %}
+    {% include '_partials/page-blocks' with {
+      pageBlocks: entry.pageBlocks,
+    } only %}
+  {% endcache %}
+
+  {% cache %}
+    {% include '_partials/resources/related-resources' with {
+      currentEntryId: entry.id,
+      entries: entry.resourceRelatedResources,
+      type: entry.type,
+    } only %}
+  {% endcache %}
+
+{% endblock %}

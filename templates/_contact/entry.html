@@ -1,0 +1,44 @@
+{% import '_macros' as macros %}
+{% extends '_layouts/app' %}
+
+{% block content %}
+  {# Handle success/error messaging #}
+  {% switch craft.app.request.getQueryParam('status') %}
+    {% case 'success' %}
+      {% include '_partials/notification' with {
+        style: 'success',
+        text: 'Thanks! Your submission is being processed.',
+      } only %}
+
+    {% case 'error' %}
+      {% include '_partials/notification' with {
+        style: 'error',
+        text: 'Error. Please check your form and try again.',
+      } only %}
+  {% endswitch %}
+
+  {% include '_partials/pages/hero' with {
+    heading: entry.heroHeading ?? entry.title,
+    description: entry.heroDescription,
+  } only %}
+
+  <section class="max-w-1000 mx-auto py-48 px-16">
+    {% switch entry.contactIntegrationService %}
+
+      {% case 'pardot' %}
+        {% include '_contact/pardot' with {
+          formAction: entry.pardotFormAction
+        } only %}
+
+      {% case 'marketo' %}
+        {% include '_contact/marketo' with {
+          formId: entry.marketoFormId,
+        } only %}
+
+    {% endswitch %}
+
+    <div class="rtf text-center">
+      {{ entry.contactFooterText }}
+    </div>
+  </section>
+{% endblock %}

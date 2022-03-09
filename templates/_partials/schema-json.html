@@ -1,0 +1,33 @@
+{% set schemaJson = schemaJson ?? null %}
+
+{% if schemaJson %}
+  <script type="application/ld+json">
+    {
+      {% set rows = [] %}
+      {% for item in schemaJson %}
+        {% if item.singleValue %}
+          {% set rows = rows | merge(['"' ~ item.key ~ '": "' ~ item.singleValue ~ '"']) %}
+        {% endif %}
+        {% if item.array | length %}
+          {% set arr = [] %}
+          {% for row in item.array if row.value %}
+            {% set arr = arr | merge(['"' ~ row.value ~ '"']) %}
+          {% endfor %}
+          {% if arr | length %}
+            {% set rows = rows | merge(['"' ~ item.key ~ '": [' ~ arr | join(',') ~ ']']) %}
+          {% endif %}
+        {% endif %}
+        {% if item.object | length %}
+          {% set arr = [] %}
+          {% for row in item.object if row.key and row.value %}
+            {% set arr = arr | merge(['"' ~ row.key ~ '": "' ~ row.value ~ '"']) %}
+          {% endfor %}
+          {% if arr | length %}
+            {% set rows = rows | merge(['"' ~ item.key ~ '": {' ~ arr | join (',') ~ '}']) %}
+          {% endif %}
+        {% endif %}
+      {% endfor %}
+      {{ rows | join(', ') | raw }}
+    }
+  </script>
+{% endif %}
